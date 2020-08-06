@@ -2499,7 +2499,13 @@ class PlotGUI(Tk.Frame):
                 v1 = v2
                 v2 = temp
             try:
-                n1 = int(self.number_of_values_field.get())
+                instring = self.number_of_values_field.get()
+                if '.' in instring:
+                    n1 = 0
+                    step = float(instring)
+                else:
+                    n1 = int(instring)
+                    step = 0.
             except:
                 n1 = 0
                 step = float(self.number_of_values_field.get())
@@ -2508,6 +2514,13 @@ class PlotGUI(Tk.Frame):
             if (option == 0) or ((v1 <= 0.) or (v2 <= 0)):
                 if n1 > 1:
                     step = (v2-v1)/(n1-1)
+                else:
+                    if step == 0.:
+                        step = v2 - v1
+                if (v1 == v2) or (step <= 0.):
+                    tkinter.messagebox.showinfo(
+                        'Error', 
+                        'There was some error trying to generate the sets.  (1)')
                 seq = numpy.arange(v1, v2+step, step)
                 if (len(seq) > n1) and (n1 > 1):
                     seq = seq[0:n1]
@@ -2557,7 +2570,7 @@ class PlotGUI(Tk.Frame):
             if len(xvalues) != len(yvalues):
                 tkinter.messagebox.showinfo(
                     'Error',
-                    'There was some error trying to generate the sets. (1)')
+                    'There was some error trying to generate the sets. (2)')
                 return
             if (xvalues is not None) and (yvalues is not None):
                 self.add_set(xvalues, yvalues, current_plot=self.current_plot)
@@ -2565,11 +2578,11 @@ class PlotGUI(Tk.Frame):
             else:
                 tkinter.messagebox.showinfo(
                     'Error',
-                    'There was some error trying to generate the sets. (2)')
+                    'There was some error trying to generate the sets. (3)')
         except:
             tkinter.messagebox.showinfo(
                 'Error',
-                'There was some error trying to generate the sets. (3)')
+                'There was some error trying to generate the sets. (4)')
 
     def my_eval(self, inputstring, seq, xvalues=None, yvalues=None):
         """
