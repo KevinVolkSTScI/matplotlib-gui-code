@@ -6148,49 +6148,11 @@ class PlotGUI(Tk.Frame):
                                command=lambda: save_png_figure(self.p1))
             button.pack(side=Tk.LEFT)
             button.config(bg=BGCOL)
-            button = Tk.Button(h1, text="Save as FITS", command=self.makeFits)
-            button.pack(side=Tk.LEFT)
-            button.config(bg=BGCOL)
             button = Tk.Button(h1, text="Close", command=hesswindow.destroy)
             button.pack()
             button.config(bg=BGCOL)
         except:
             pass
-
-    def makeFits(self):
-        """
-        Write out the two-dimensional histogram image as a FITS file.
-
-        This routine makes a FITS output file of the two-dimensional histogram
-        values in the plot, for use by other codes.
-
-        No values are passed to this routine or returned from it.
-
-        """
-        filename = tkinter.filedialog.asksaveasfilename(
-            filetypes=[('FITS', '*.fits')])
-        st1 = filename.split('.')
-        if 'fits' not in st1[-1]:
-            filename = filename + '.fits'
-        newimage = numpy.transpose(self.hist2d)
-        hdu = fits.PrimaryHDU(newimage)
-        hdulist = fits.HDUList(hdu)
-        primary = hdulist[0].header
-        primary['CRPIX1'] = (1.0, 'Axis 1 reference pixel')
-        primary['CRPIX2'] = (1.0, 'Axis 2 reference pixel')
-        x1 = (self.xedges[1]+self.xedges[0])/2.
-        delx = (self.xedges[1]-self.xedges[0])
-        y1 = (self.yedges[1]+self.yedges[0])/2.
-        dely = (self.yedges[1]-self.yedges[0])
-        primary['CRVAL1'] = (x1, 'mean value at reference pixel')
-        primary['CRVAL2'] = (y1, 'sigma value at reference pixel')
-        primary['CDELT1'] = (delx, 'change in mean value per pixel')
-        primary['CDELT2'] = (dely, 'change in sigma value per pixel')
-        primary['CTYPE1'] = (' ', 'axis 1 type')
-        primary['CTYPE2'] = (' ', 'axis 2 type')
-        primary['CUNIT1'] = (' ', 'axis 1 unit')
-        primary['CUNIT2'] = (' ', 'axis 2 unit')
-        hdulist.writeto(filename, overwrite=True)
 
     def histogram_position(self, event):
         """
