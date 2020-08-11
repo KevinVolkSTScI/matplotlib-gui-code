@@ -28,5 +28,7 @@ in the display area.
 
 The code is written in Python 3 and will not function in Python 2.
 
-There is an issue with the code for the specific combination of MacOS 10.14 python 3.7.  The code will not execute with this combination, and so users would need to use either Python 3.6 or 3.8 with this MacOS version.
+There is an issue with the code for the specific combination of MacOS 10.14 and 
+python 3.7.  The code will not execute with this combination, and so users would 
+need to use either Python 3.6 or 3.8 with this MacOS version.
 
