@@ -8,14 +8,12 @@ in general usage to 'xmgrace" (although not intending to duplicate all the
 xmgrace funcionality...).  From the interface one is able to read in data and
 interactively change the plot properties (axes, symbols, lines, and so on).
 
-
 ** NOTE:  for this program to work properly it needs to be in a directory
 listed in the $PATH environment variable, and also in the $PYTHON_PATH
 environment variable.  These allow the code to be called from the command
 line and from inside python, respectively.
 
-** Note:  this code uses python 3, it will not work with python 2.
-
+** NOTE:  this code uses python 3, it will not work with python 2.
 
 Various of the functions provided here are not available in the normal
 .plot() interface of matplotlib.
@@ -86,7 +84,7 @@ One simple example would be
 >>> myplot=matplotlib_gui_code.PlotGUI(root)
 
 This fills in the buttons/functions in the window.  The functionality is
-then avaialble.
+then available.
 
 (4) Add a set or sets to the plot.  Any number of sets up a limit (currently
 100) can be added.  See the add_set subroutine doc string for the possible
@@ -301,7 +299,7 @@ def hybrid_transform(datavalues):
         newdatavalues[inds] = numpy.log10(newdatavalues[inds])
         inds = numpy.where(datavalues <= -10.)
         newdatavalues[inds] = -1.0*numpy.log10(numpy.abs(newdatavalues[inds]))
-    except:
+    except ValueError:
         if abs(datavalues) >= 10.:
             newdatavalues = math.log10(abs(datavalues))
             if datavalues < 0.:
@@ -464,7 +462,7 @@ def parse_text(text):
                 try:
                     v1 = float(values[loop])
                     numbers.append(v1)
-                except:
+                except ValueError:
                     pass
             if len(numbers) == 2:
                 xvalues.append(numbers[0])
@@ -826,7 +824,7 @@ class PlotGUI(Tk.Frame):
         controlframe = Tk.Frame(self.root)
         controlframe.pack(side=Tk.LEFT, fill=Tk.Y, expand=1)
         self.make_controls(controlframe)
-        sl = self.separator_line(self.root, 5, 750, 5, False, Tk.LEFT)
+        self.separator_line(self.root, 5, 750, 5, False, Tk.LEFT)
         self.plotframe = Tk.Frame(self.root)
         self.plotframe.pack(side=Tk.LEFT, fill=Tk.Y, expand=1)
         self.make_plot_area(self.plotframe)
@@ -1122,7 +1120,7 @@ class PlotGUI(Tk.Frame):
                 'minorticks': 0, 'oppositeaxis': 0}
             try:
                 self.legend_variable[self.current_plot-1].set(0)
-            except:
+            except AttributeError:
                 self.legend_variable[self.current_plot-1] = None
         self.legend_handles[self.current_plot-1] = None
         self.legend_labels[self.current_plot-1] = None
@@ -1225,7 +1223,8 @@ class PlotGUI(Tk.Frame):
         outfilename = tkinter.filedialog.asksaveasfilename()
         if isinstance(outfilename, type('string')):
             outfile = open(outfilename, 'w')
-            print('# matplotlib_gui_code.py save file version 1.0', file=outfile)
+            print('# matplotlib_gui_code.py save file version 1.0',
+                  file=outfile)
             print('# number of sets: %d maximum: %d' %
                   (self.nsets, self.max_sets), file=outfile)
             for loop in range(self.nsets):
@@ -1500,7 +1499,7 @@ class PlotGUI(Tk.Frame):
                             str1 = str1 + '%f\t%f' % (
                                 self.legend_user_position[nplot][0],
                                 self.legend_user_position[nplot][1])
-                        except:
+                        except (AttributeError, TypeError):
                             str1 = str1 + 'None\tNone'
                     print(str1, file=outfile)
                     nplot = nplot + 1
@@ -1607,8 +1606,8 @@ class PlotGUI(Tk.Frame):
         """
         Parse an ascii save file and optionally load the values.
 
-        This program reads the lines from a matplotlib_gui_code.py save file.  It
-        determines whether the file is structured properly.  If the
+        This program reads the lines from a matplotlib_gui_code.py save file.
+        It determines whether the file is structured properly.  If the
         flag value is True it also tries to set the parameters for the plot.
 
         Parameters
@@ -1623,7 +1622,8 @@ class PlotGUI(Tk.Frame):
         Returns
         -------
             goodfile :  A boolean value for whether the lines are of the
-                       expected structure for a matplotlib_gui_code.py save file
+                       expected structure for a matplotlib_gui_code.py save
+                       file
 
         """
         goodfile = False
@@ -1641,7 +1641,7 @@ class PlotGUI(Tk.Frame):
                 values = line.split()
                 try:
                     version = float(values[-1])
-                except:
+                except ValueError:
                     return goodfile
                 if version != self.save_version:
                     return goodfile
@@ -1652,7 +1652,7 @@ class PlotGUI(Tk.Frame):
                 try:
                     nsets = int(values[4])
                     maxsets = int(values[6])
-                except:
+                except ValueError:
                     return goodfile
                 if (nsets < 1) or (nsets > maxsets):
                     return goodfile
@@ -1877,7 +1877,7 @@ class PlotGUI(Tk.Frame):
                     xmax = float(values[4])
                     ymin = float(values[5])
                     ymax = float(values[6])
-                except:
+                except ValueError:
                     return goodfile
                 pp['plot_range'] = [0., 1., 0., 1.]
                 pp['plot_range'][0] = 1.*xmin
@@ -2300,7 +2300,7 @@ class PlotGUI(Tk.Frame):
                     if loop < len(self.legend_variable):
                         try:
                             self.legend_variable[loop].set(0)
-                        except:
+                        except AttributeError:
                             self.legend_variable.append(None)
                     else:
                         self.legend_variable.append(None)
@@ -2309,7 +2309,7 @@ class PlotGUI(Tk.Frame):
                         try:
                             self.legend_variable[loop].set(
                                 legend[loop]['legend_variable_value'])
-                        except:
+                        except (AttributeError, ValueError):
                             self.legend_variable[loop] = Tk.IntVar()
                             self.legend_variable[loop].set(
                                 legend[loop]['legend_variable_value'])
@@ -2321,7 +2321,7 @@ class PlotGUI(Tk.Frame):
                     if loop < len(self.legend_frame):
                         try:
                             self.legend_frame[loop].set(0)
-                        except:
+                        except AttributeError:
                             self.legend_frame.append(None)
                     else:
                         self.legend_frame.append(None)
@@ -2330,7 +2330,7 @@ class PlotGUI(Tk.Frame):
                         try:
                             self.legend_frame[loop].set(
                                 legend[loop]['legend_frame_value'])
-                        except:
+                        except (AttributeError, ValueError):
                             self.legend_frame[loop] = Tk.IntVar()
                             self.legend_frame[loop].set(
                                 legend[loop]['legend_frame_value'])
@@ -2342,7 +2342,7 @@ class PlotGUI(Tk.Frame):
                     if loop < len(self.legend_options):
                         try:
                             self.legend_options[loop].get()
-                        except:
+                        except AttributeError:
                             self.legend_options.append(None)
                     else:
                         self.legend_options.append(None)
@@ -2351,7 +2351,7 @@ class PlotGUI(Tk.Frame):
                         try:
                             self.legend_options[loop].set(
                                 legend[loop]['legend_option_value'])
-                        except:
+                        except (AttributeError, ValueError):
                             self.legend_options[loop] = Tk.StringVar()
                             self.legend_options[loop].set(
                                 legend[loop]['legend_option_value'])
@@ -2487,7 +2487,7 @@ class PlotGUI(Tk.Frame):
 
         This routine reads the parameters to make a new set and attempts to
         evaluate them using a parser function.  Whilst one could use the
-        eval() function this is considered as too dangerous.
+        eval() function directly this is considered as too dangerous.
 
         No values are passed to this routine or returned from it.
         """
@@ -2504,9 +2504,9 @@ class PlotGUI(Tk.Frame):
                     n1 = 0
                     step = float(instring)
                 else:
-                    n1 = int(instring)
                     step = 0.
-            except:
+                    n1 = int(instring)
+            except ValueError:
                 n1 = 0
                 step = float(self.number_of_values_field.get())
             # if the value n1 is not an integer, assume it is a step size
@@ -2516,11 +2516,12 @@ class PlotGUI(Tk.Frame):
                     step = (v2-v1)/(n1-1)
                 else:
                     if step == 0.:
-                        step = v2 - v1
+                        step = (v2 - v1)
                 if (v1 == v2) or (step <= 0.):
                     tkinter.messagebox.showinfo(
-                        'Error', 
-                        'There was some error trying to generate the sets.  (1)')
+                        'Error',
+                        'There was some error trying to generate the sets.')
+                    return
                 seq = numpy.arange(v1, v2+step, step)
                 if (len(seq) > n1) and (n1 > 1):
                     seq = seq[0:n1]
@@ -2549,19 +2550,19 @@ class PlotGUI(Tk.Frame):
                                        yvalues=None)
                 yvalues = self.my_eval(ystring, seq=seq, xvalues=xvalues,
                                        yvalues=None)
-            except:
+            except ValueError:
                 yvalues = self.my_eval(ystring, seq=seq, xvalues=None,
                                        yvalues=None)
                 xvalues = self.my_eval(xstring, seq=seq, xvalues=None,
                                        yvalues=yvalues)
             # deal with the case where one of x or y is entered as a constant
             try:
-                n = len(xvalues)
-            except:
+                len(xvalues)
+            except ValueError:
                 xvalues = numpy.asarray([xvalues, ])
             try:
-                n = len(yvalues)
-            except:
+                len(yvalues)
+            except ValueError:
                 yvalues = numpy.asarray([yvalues, ])
             if (len(xvalues) == 1) and (len(yvalues) > 1):
                 xvalues = yvalues*0.+xvalues
@@ -2580,6 +2581,7 @@ class PlotGUI(Tk.Frame):
                     'Error',
                     'There was some error trying to generate the sets. (3)')
         except:
+            # Catch other errors (not anticipated to happen)
             tkinter.messagebox.showinfo(
                 'Error',
                 'There was some error trying to generate the sets. (4)')
@@ -2627,11 +2629,11 @@ class PlotGUI(Tk.Frame):
         sh1 = seq.shape
         try:
             sh2 = xvalues.shape
-        except:
+        except AttributeError:
             sh2 = seq.shape
         try:
             sh3 = yvalues.shape
-        except:
+        except AttributeError:
             sh3 = seq.shape
         if (sh1 != sh2) or (sh2 != sh3) or (len(sh1) > 1):
             return None
@@ -2660,7 +2662,7 @@ class PlotGUI(Tk.Frame):
                 local1['y'] = y
             values = eval(str1, global2, local1)
             return values
-        except:
+        except (ValueError, SyntaxError):
             return None
 
     def create_data_set_by_editor(self):
@@ -2732,7 +2734,7 @@ class PlotGUI(Tk.Frame):
                          labelstring='Set from editor',
                          current_plot=self.current_plot)
             self.make_plot()
-        except:
+        except ValueError:
             tkinter.messagebox.showinfo(
                 'error',
                 'Unable to parse text from entry widget')
@@ -3205,7 +3207,7 @@ class PlotGUI(Tk.Frame):
                                       'font': font,
                                       'fontweight': fontweight})
                     nlabels = nlabels + 1
-                except:
+                except ValueError:
                     pass
         label_window.destroy()
         if nlabels > self.max_labels:
@@ -3333,7 +3335,7 @@ class PlotGUI(Tk.Frame):
         self.put_yes_no(b1, self.individualhistogramflag,
                         ['all sets', 'individual sets'], True)
         b1.pack(side=Tk.TOP)
-        sl = self.separator_line(holder, 300, 25, 5, True)
+        self.separator_line(holder, 300, 25, 5, True)
         self.matplotlib_rounding = Tk.IntVar()
         b1 = Tk.Frame(holder)
         label1 = Tk.Label(b1, text='Axis limits rounding algorithm: ')
@@ -3343,7 +3345,7 @@ class PlotGUI(Tk.Frame):
         self.put_yes_no(b1, self.matplotlib_rounding,
                         ['Matplotlib', 'Alternate'], True)
         b1.pack(side=Tk.TOP)
-        sl = self.separator_line(holder, 300, 25, 5, True)
+        self.separator_line(holder, 300, 25, 5, True)
         button5 = Tk.Button(holder, text='Save as PNG',
                             command=lambda: save_png_figure(self.figure))
         button5.pack(side=Tk.TOP, fill=Tk.X)
@@ -3375,128 +3377,125 @@ class PlotGUI(Tk.Frame):
 
         No parameters are passed to the routine, and no values are returned.
         """
+        histogramwindow = Tk.Toplevel()
+        histogramwindow.config(bg=BGCOL)
+        optionflag = self.histogramflag.get()
+        setoptionflag = self.individualhistogramflag.get()
         try:
-            histogramwindow = Tk.Toplevel()
-            histogramwindow.config(bg=BGCOL)
-            optionflag = self.histogramflag.get()
-            setoptionflag = self.individualhistogramflag.get()
-            try:
-                value = float(self.nbinfield.get())
-                if value == 0:
-                    tkinter.messagebox.showinfo(
-                        "Error",
-                        "Zero value for the number of bins/bin size."
-                        + "  Check your inputs.")
-                    return
-                if value < 1.:
-                    delx = value
-                    nbins = 0
-                else:
-                    nbins = int(value+0.001)
-                    delx = 0.
-            except:
+            value = float(self.nbinfield.get())
+            if value == 0:
                 tkinter.messagebox.showinfo(
                     "Error",
-                    "Unable to read the number of bins/bin size.  "
-                    + "Check your inputs.")
+                    "Zero value for the number of bins/bin size."
+                    + "  Check your inputs.")
                 return
-            if optionflag == 1:
-                xmin = self.plot_range[self.current_plot-1][0]
-                xmax = self.plot_range[self.current_plot-1][1]
+            if value < 1.:
+                delx = abs(value)
+                nbins = 0
             else:
-                xmin = self.plot_range[self.current_plot-1][2]
-                xmax = self.plot_range[self.current_plot-1][3]
-            xp = None
-            for loop in range(self.nsets):
-                if (self.set_properties[loop]['display']) and \
+                nbins = int(value+0.001)
+                delx = 0.
+        except ValueError:
+            tkinter.messagebox.showinfo(
+                "Error",
+                "Unable to read the number of bins/bin size.  "
+                + "Check your inputs.")
+            return
+        if optionflag == 1:
+            xmin = self.plot_range[self.current_plot-1][0]
+            xmax = self.plot_range[self.current_plot-1][1]
+        else:
+            xmin = self.plot_range[self.current_plot-1][2]
+            xmax = self.plot_range[self.current_plot-1][3]
+        xp = None
+        for loop in range(self.nsets):
+            if (self.set_properties[loop]['display']) and \
                    (self.set_properties[loop]['plot'] == self.current_plot):
-                    mycolour = self.set_properties[loop]['colour']
-                    if optionflag == 1:
-                        values = numpy.copy(self.xdata[loop]['values'])
-                    else:
-                        values = numpy.copy(self.ydata[loop]['values'])
-                    if xp is None:
-                        xp = [values, ]
-                        histcolours = [mycolour, ]
-                    else:
-                        if setoptionflag == 1:
-                            oldvalues = numpy.copy(xp[0])
-                            newvalues = numpy.append(oldvalues, values)
-                            xp[0] = newvalues
-                        else:
-                            xp.append(values)
-                            histcolours.append(mycolour)
-            self.histogramLabelText = Tk.StringVar()
-            self.histogramLabel = Tk.Label(
-                histogramwindow,
-                textvariable=self.histogramLabelText, anchor=Tk.N, width=70)
-            self.histogramLabel.pack()
-            self.histogramLabelText.set("Value:")
-            self.p2 = Figure(figsize=(6, 6), dpi=100)
-            sp1 = self.p2.add_subplot(1, 1, 1)
-            c1 = FigureCanvasTkAgg(self.p2, master=histogramwindow)
-            c1.mpl_connect("motion_notify_event", self.histogram_position)
-            try:
-                if delx > 0.:
-                    npixels = int(abs((xmax-xmin)/delx))
-                    delx = abs(delx)
+                mycolour = self.set_properties[loop]['colour']
+                if optionflag == 1:
+                    values = numpy.copy(self.xdata[loop]['values'])
                 else:
-                    npixels = nbins
-                    delx = (xmax-xmin)/npixels
-            except:
-                nbins = 500
-            histx = []
-            histy = []
-            for loop in range(len(xp)):
-                histogramy, hxedges = numpy.histogram(
-                    xp[loop], npixels, range=[xmin, xmax])
-                histogramx = (hxedges[1:]+hxedges[0:-1])/2.
-                sp1.bar(histogramx, histogramy,
-                        color=histcolours[loop],
-                        width=delx*0.9)
-                histx.append(histogramx)
-                histy.append(histogramy)
-            if optionflag == 1:
-                sp1.set_xlabel(self.xparameters[self.current_plot-1]['label'],
-                               family=self.fontname[self.current_plot-1],
-                               size=self.fontsize[self.current_plot-1],
-                               weight=self.fontweight[self.current_plot-1])
+                    values = numpy.copy(self.ydata[loop]['values'])
+                if xp is None:
+                    xp = [values, ]
+                    histcolours = [mycolour, ]
+                else:
+                    if setoptionflag == 1:
+                        oldvalues = numpy.copy(xp[0])
+                        newvalues = numpy.append(oldvalues, values)
+                        xp[0] = newvalues
+                    else:
+                        xp.append(values)
+                        histcolours.append(mycolour)
+        self.histogramLabelText = Tk.StringVar()
+        self.histogramLabel = Tk.Label(
+            histogramwindow,
+            textvariable=self.histogramLabelText, anchor=Tk.N, width=70)
+        self.histogramLabel.pack()
+        self.histogramLabelText.set("Value:")
+        self.p2 = Figure(figsize=(6, 6), dpi=100)
+        sp1 = self.p2.add_subplot(1, 1, 1)
+        c1 = FigureCanvasTkAgg(self.p2, master=histogramwindow)
+        c1.mpl_connect("motion_notify_event", self.histogram_position)
+        try:
+            if delx > 0.:
+                npixels = int(abs((xmax-xmin)/delx))
+                delx = abs(delx)
             else:
-                sp1.set_xlabel(self.yparameters[self.current_plot-1]['label'],
-                               family=self.fontname[self.current_plot-1],
-                               size=self.fontsize[self.current_plot-1],
-                               weight=self.fontweight[self.current_plot-1])
-            sp1.set_ylabel('Number of points per bin')
-            invertxflag = self.xparameters[self.current_plot-1]['invert']
-            invertyflag = self.yparameters[self.current_plot-1]['invert']
-            if (invertxflag == 1) and (optionflag == 1):
-                sp1.invert_xaxis()
-            if (invertyflag == 1) and (optionflag == 0):
-                sp1.invert_xaxis()
-            c1.draw()
-            c1.get_tk_widget().pack(side=Tk.TOP, fill=Tk.BOTH, expand=Tk.YES)
-            h1 = Tk.Frame(histogramwindow)
-            h1.pack(side=Tk.TOP)
-            h1.config(bg=BGCOL)
-            button = Tk.Button(h1, text="Save as PS",
-                               command=lambda: save_ps_figure(self.p2))
-            button.pack(side=Tk.LEFT)
-            button.config(bg=BGCOL)
-            button = Tk.Button(h1, text="Save as PNG",
-                               command=lambda: save_png_figure(self.p2))
-            button.pack(side=Tk.LEFT)
-            button.config(bg=BGCOL)
-            button = Tk.Button(
-                h1, text="Write out values",
-                command=lambda: self.writeHistogram(histx, histy))
-            button.pack(side=Tk.LEFT)
-            button.config(bg=BGCOL)
-            button = Tk.Button(
-                h1, text="Close", command=histogramwindow.destroy)
-            button.pack()
-            button.config(bg=BGCOL)
-        except:
-            pass
+                npixels = nbins
+                delx = (xmax-xmin)/npixels
+        except ValueError:
+            nbins = 500
+        histx = []
+        histy = []
+        for loop in range(len(xp)):
+            histogramy, hxedges = numpy.histogram(
+                xp[loop], npixels, range=[xmin, xmax])
+            histogramx = (hxedges[1:]+hxedges[0:-1])/2.
+            sp1.bar(histogramx, histogramy,
+                    color=histcolours[loop],
+                    width=delx*0.9)
+            histx.append(histogramx)
+            histy.append(histogramy)
+        if optionflag == 1:
+            sp1.set_xlabel(self.xparameters[self.current_plot-1]['label'],
+                           family=self.fontname[self.current_plot-1],
+                           size=self.fontsize[self.current_plot-1],
+                           weight=self.fontweight[self.current_plot-1])
+        else:
+            sp1.set_xlabel(self.yparameters[self.current_plot-1]['label'],
+                           family=self.fontname[self.current_plot-1],
+                           size=self.fontsize[self.current_plot-1],
+                           weight=self.fontweight[self.current_plot-1])
+        sp1.set_ylabel('Number of points per bin')
+        invertxflag = self.xparameters[self.current_plot-1]['invert']
+        invertyflag = self.yparameters[self.current_plot-1]['invert']
+        if (invertxflag == 1) and (optionflag == 1):
+            sp1.invert_xaxis()
+        if (invertyflag == 1) and (optionflag == 0):
+            sp1.invert_xaxis()
+        c1.draw()
+        c1.get_tk_widget().pack(side=Tk.TOP, fill=Tk.BOTH, expand=Tk.YES)
+        h1 = Tk.Frame(histogramwindow)
+        h1.pack(side=Tk.TOP)
+        h1.config(bg=BGCOL)
+        button = Tk.Button(h1, text="Save as PS",
+                           command=lambda: save_ps_figure(self.p2))
+        button.pack(side=Tk.LEFT)
+        button.config(bg=BGCOL)
+        button = Tk.Button(h1, text="Save as PNG",
+                           command=lambda: save_png_figure(self.p2))
+        button.pack(side=Tk.LEFT)
+        button.config(bg=BGCOL)
+        button = Tk.Button(
+            h1, text="Write out values",
+            command=lambda: self.writeHistogram(histx, histy))
+        button.pack(side=Tk.LEFT)
+        button.config(bg=BGCOL)
+        button = Tk.Button(
+            h1, text="Close", command=histogramwindow.destroy)
+        button.pack()
+        button.config(bg=BGCOL)
 
     def writeHistogram(self, xvalues, yvalues):
         """
@@ -3675,7 +3674,7 @@ class PlotGUI(Tk.Frame):
                | (n1 > nx1*ny1):
                 raise ValueError
             self.make_plot_layout(nx1, ny1, n1)
-        except:
+        except ValueError:
             tkinter.messagebox.showinfo(
                 "Error",
                 "There was some issue with the plot layout parameters.")
@@ -3715,7 +3714,7 @@ class PlotGUI(Tk.Frame):
             for loop in range(self.number_of_plots):
                 try:
                     value = self.xparameters[loop]['xmin']
-                except:
+                except (ValueError, AttributeError):
                     self.xparameters.append({'label': ' ',
                                              'minimum': 0.0,
                                              'maximum': 1.0, 'major': 0.1,
@@ -3749,8 +3748,8 @@ class PlotGUI(Tk.Frame):
                     self.title.append(' ')
             for loop in range(self.number_of_plots):
                 try:
-                    value = self.legend_position[loop]
-                except:
+                    self.legend_position[loop]
+                except (ValueError, IndexError):
                     self.legend_position.append(None)
                     self.legend_labels.append(None)
                     self.legend_handles.append(None)
@@ -3760,8 +3759,8 @@ class PlotGUI(Tk.Frame):
                     self.legend_user_position.append(None)
             for loop in range(self.number_of_plots):
                 try:
-                    values = self.equal_aspect[loop]
-                except:
+                    self.equal_aspect[loop]
+                except (ValueError, IndexError):
                     self.equal_aspect.append(False)
         self.make_plot()
 
@@ -3788,7 +3787,7 @@ class PlotGUI(Tk.Frame):
                 raise ValueError
             if n1 != self.current_plot:
                 self.current_plot = n1
-        except:
+        except ValueError:
             tkinter.messagebox.showinfo(
                 "Error", "There was an error in the requested plot number.")
 
@@ -3818,7 +3817,7 @@ class PlotGUI(Tk.Frame):
             self.current_plot = n1
             self.make_plot()
             self.current_plot = plotnumber
-        except:
+        except ValueError:
             tkinter.messagebox.showinfo(
                 "Error", "There was an error in the requested plot number.")
 
@@ -3894,7 +3893,7 @@ class PlotGUI(Tk.Frame):
         for loop in range(len(self.legend_variable)):
             try:
                 self.legend_variable[loop].set(0)
-            except:
+            except AttributeError:
                 self.legend_variable[loop] = None
         self.legend_handles = [None, ]
         self.legend_labels = [None, ]
@@ -4054,8 +4053,8 @@ class PlotGUI(Tk.Frame):
         """
         Round a floating point value to the nearest significant figure.
 
-        If the self.matplotlib_rounding flag is False this performs rounding of
-        floating point values to convenient values for such things as
+        If the self.matplotlib_rounding flag is False this performs rounding
+        of floating point values to convenient values for such things as
         calculating plot ranges.  In some cases the matplotlib rounding is
         not very good so this is provided as a way to get better results.
         When one is using a logarithmic scaling the matplotlib ropunding is
@@ -4177,7 +4176,7 @@ class PlotGUI(Tk.Frame):
                      + 'data (%.6g, %.6g) distance %.6g' % (
                          xpoint, ypoint, distance)
             self.position_label_text.set(s1)
-        except:
+        except ValueError:
             pass
 
     def match_point(self, xposition, yposition):
@@ -4230,20 +4229,20 @@ class PlotGUI(Tk.Frame):
                 dminset = numpy.copy(distances[dargmin])
                 try:
                     dminhere = dminset[0]
-                except:
+                except (ValueError, TypeError, IndexError):
                     dminhere = dminset
                 if (dmin < 0.) or (dminhere < dmin):
                     nset = loop
                     try:
                         ndata = dargmin[0]
-                    except:
+                    except (ValueError, TypeError, IndexError):
                         ndata = dargmin
                     dmin = dminhere
                     xmin = xdata[ndata]
                     ymin = ydata[ndata]
             if dmin >= 0.:
                 return nset, ndata, xmin, ymin, dmin
-        except:
+        except ValueError:
             return None, None, None, None, None
 
     def plot_marker_set(self, event):
@@ -4285,7 +4284,7 @@ class PlotGUI(Tk.Frame):
                 self.set_label_properties(self.number_of_labels)
                 self.number_of_labels = self.number_of_labels + 1
                 self.make_plot()
-            except:
+            except ValueError:
                 tkinter.messagebox.showinfo(
                     "Label Error", "The label was not processed properly.")
             return
@@ -4365,7 +4364,7 @@ class PlotGUI(Tk.Frame):
             self.positions[-2][1]
             self.positions[-1][0]
             self.positions[-1][1]
-        except:
+        except IndexError:
             tkinter.messagebox.showinfo(
                 "Error",
                 "The required start and stop positions are not available"
@@ -4488,7 +4487,7 @@ class PlotGUI(Tk.Frame):
             self.number_of_lines = self.number_of_lines + 1
             self.make_plot()
             self.close_data_window(self.line_window)
-        except:
+        except ValueError:
             return
 
     def apply_vector_values(self):
@@ -4552,7 +4551,7 @@ class PlotGUI(Tk.Frame):
             self.number_of_vectors = self.number_of_vectors + 1
             self.make_plot()
             self.close_data_window(self.vector_window)
-        except:
+        except ValueError:
             return
 
     def apply_box_values(self):
@@ -4604,7 +4603,7 @@ class PlotGUI(Tk.Frame):
             self.number_of_boxes = self.number_of_boxes + 1
             self.make_plot()
             self.close_window(self.box_window)
-        except:
+        except ValueError:
             return
 
     def add_ellipse_values(self):
@@ -4764,7 +4763,7 @@ class PlotGUI(Tk.Frame):
             self.number_of_ellipses = self.number_of_ellipses + 1
             self.make_plot()
             self.close_window(self.ellipse_window)
-        except:
+        except ValueError:
             return
 
     def add_line_values(self):
@@ -5104,7 +5103,7 @@ class PlotGUI(Tk.Frame):
             self.plot_labels[ind1]['font'] = font
             self.plot_labels[ind1]['fontweight'] = fontweight
             self.make_plot()
-        except:
+        except ValueError:
             pass
 
     def make_plot(self):
@@ -5154,12 +5153,12 @@ class PlotGUI(Tk.Frame):
         try:
             xminorticks = \
                 float(self.xparameters[self.current_plot-1]['minorticks'])
-        except:
+        except ValueError:
             xminorticks = 0.0
         try:
             yminorticks = \
                 float(self.yparameters[self.current_plot-1]['minorticks'])
-        except:
+        except ValueError:
             yminorticks = 0.0
         for loop in range(self.nsets):
             if (self.set_properties[loop]['display']) \
@@ -5862,7 +5861,7 @@ class PlotGUI(Tk.Frame):
                          'fontweight': self.plot_labels[loop]['fontweight']})
         try:
             legend_flag = self.legend_variable[self.current_plot-1].get()
-        except:
+        except (ValueError, AttributeError):
             legend_flag = 0
         if legend_flag:
             self.generate_legend(None)
@@ -5878,7 +5877,7 @@ class PlotGUI(Tk.Frame):
                         legend_position = [xlpos, ylpos]
                         self.legend_user_position[self.current_plot-1] = \
                             legend_position
-                except:
+                except (ValueError, AttributeError):
                     legend_option = 'best'
             else:
                 legend_option = self.legend_position[self.current_plot-1]
@@ -5886,7 +5885,7 @@ class PlotGUI(Tk.Frame):
                     legend_position = 'best'
             try:
                 legend_frame = self.legend_frame[self.current_plot-1].get()
-            except:
+            except (ValueError, AttributeError):
                 legend_frame = 0
             if legend_position is None:
                 self.subplot[self.current_plot-1].legend(
@@ -6023,7 +6022,7 @@ class PlotGUI(Tk.Frame):
                     npixels = 500
                     self.npixelfield.delete(0, Tk.END)
                     self.npixelfield.insert(0, '500')
-            except:
+            except (ValueError, AttributeError):
                 npixels = 500
             self.hist2d, self.xedges, self.yedges, image = sp1.hist2d(
                 xp, yp, npixels, range=[[xmin, xmax], [ymin, ymax]],
@@ -6055,12 +6054,12 @@ class PlotGUI(Tk.Frame):
             try:
                 xminorticks = float(self.xparameters[
                     self.current_plot-1]['minorticks'])
-            except:
+            except (ValueError, AttributeError):
                 xminorticks = 0.0
             try:
                 yminorticks = float(self.yparameters[
                     self.current_plot-1]['minorticks'])
-            except:
+            except ValueError:
                 yminorticks = 0.0
             if invertxflag == 1:
                 sp1.invert_xaxis()
@@ -6174,7 +6173,7 @@ class PlotGUI(Tk.Frame):
         try:
             s1 = 'Position: [%f, %f]' % (event.xdata, event.ydata)
             self.histogramLabelText.set(s1)
-        except:
+        except (TypeError, ValueError):
             pass
 
     def hess_position(self, event):
@@ -6200,7 +6199,7 @@ class PlotGUI(Tk.Frame):
             s1 = 'Position: [%f, %f] Value: %d' % (event.xdata, event.ydata,
                                                    self.hist2d[ix, iy])
             self.hessLabelText.set(s1)
-        except:
+        except (ValueError, TypeError):
             pass
 
     def write_data_sets(self):
@@ -6626,7 +6625,7 @@ class PlotGUI(Tk.Frame):
                 label1 = label1.upper()
                 template1 = (label1, label2)
                 filetypes.append(template1)
-        except:
+        except (AttributeError, TypeError):
             tkinter.messagebox.showinfo(
                 'Error', 'There was '
                 + 'some error reading the file pattern.  Using the default.')
@@ -6637,7 +6636,7 @@ class PlotGUI(Tk.Frame):
             try:
                 self.filename = tkinter.filedialog.askopenfilename(
                     filetypes=filetypes)
-            except:
+            except TypeError:
                 self.filename = tkinter.filedialog.askopenfilename()
         try:
             self.shortname = None
@@ -6680,7 +6679,7 @@ class PlotGUI(Tk.Frame):
                         'Error',
                         'There was some error reading file %s' % (
                             self.shortname))
-            except:
+            except (ValueError, AttributeError):
                 tkinter.messagebox.showinfo(
                     'Error',
                     'There was some error trying to read a file')
@@ -6733,12 +6732,12 @@ class PlotGUI(Tk.Frame):
                         ncols = len(values)
                         for loop in range(ncols):
                             try:
-                                x = float(values[loop])
+                                float(values[loop])
                                 inds.append(loop)
-                            except:
+                            except ValueError:
                                 pass
             return inds, ncols
-        except:
+        except ValueError:
             return None, None
 
     def get_set(self, datavalues, labelstring):
@@ -6781,36 +6780,33 @@ class PlotGUI(Tk.Frame):
             xerrorinds = [2, 3, 5, 6]
             yerrorinds = [1, 3, 4, 6]
             if option3 == 0:
-                try:
-                    inds = numpy.zeros((6), dtype=numpy.int8) - 1
-                    str1 = self.xdata_field.get()
-                    n1 = int(str1) - 1
-                    inds[0] = n1
-                    str1 = self.ydata_field.get()
-                    n1 = int(str1) - 1
-                    inds[1] = n1
-                    if option1 in xerrorinds:
-                        str1 = self.dxdata_field.get()
-                        values = str1.split(', ')
-                        n1 = int(values[0]) - 1
-                        inds[2] = n1
-                        if len(values) > 1:
-                            n1 = int(values[1])-1
-                            inds[3] = n1
-                        else:
-                            inds[3] = -1
-                    if option1 in yerrorinds:
-                        str1 = self.dydata_field.get()
-                        values = str1.split(', ')
-                        n1 = int(values[0]) - 1
-                        inds[4] = n1
-                        if len(values) > 1:
-                            n1 = int(values[1])-1
-                            inds[5] = n1
-                        else:
-                            inds[5] = -1
-                except:
-                    raise ValueError
+                inds = numpy.zeros((6), dtype=numpy.int8) - 1
+                str1 = self.xdata_field.get()
+                n1 = int(str1) - 1
+                inds[0] = n1
+                str1 = self.ydata_field.get()
+                n1 = int(str1) - 1
+                inds[1] = n1
+                if option1 in xerrorinds:
+                    str1 = self.dxdata_field.get()
+                    values = str1.split(', ')
+                    n1 = int(values[0]) - 1
+                    inds[2] = n1
+                    if len(values) > 1:
+                        n1 = int(values[1])-1
+                        inds[3] = n1
+                    else:
+                        inds[3] = -1
+                if option1 in yerrorinds:
+                    str1 = self.dydata_field.get()
+                    values = str1.split(', ')
+                    n1 = int(values[0]) - 1
+                    inds[4] = n1
+                    if len(values) > 1:
+                        n1 = int(values[1])-1
+                        inds[5] = n1
+                    else:
+                        inds[5] = -1
                 newinds = inds*0 - 1
                 for loop in range(len(inds)):
                     for n in range(len(self.data_indexes)):
@@ -6921,7 +6917,7 @@ class PlotGUI(Tk.Frame):
             self.filename = None
             self.make_plot()
             return
-        except:
+        except (ValueError, AttributeError):
             self.datavalues = None
             self.filename = None
             tkinter.messagebox.showinfo(
@@ -7190,7 +7186,7 @@ class PlotGUI(Tk.Frame):
             self.ydata[nset-1]['lowerror'] = dyvalues1
             self.ydata[nset-1]['higherror'] = dyvalues2
             self.make_plot()
-        except:
+        except (ValueError, TypeError):
             tkinter.messagebox.showinfo(
                 'error',
                 'Unable to parse text from edit widget')
@@ -7272,7 +7268,7 @@ class PlotGUI(Tk.Frame):
             flag = self.do_sort_set(set_number, option1, option2)
             if not flag:
                 tkinter.messagebox.showinfo('Error', 'The set was not sorted.')
-        except:
+        except ValueError:
             tkinter.messagebox.showinfo('Error', 'The set was not sorted.')
 
     def do_sort_set(self, set_number, xyoption=1, direction_option=0):
@@ -7336,7 +7332,7 @@ class PlotGUI(Tk.Frame):
             self.ydata[set_number]['higherror'] = yhigherror
             self.make_plot()
             return True
-        except:
+        except ValueError:
             return False
 
     def make_data_set_fitting_window(self):
@@ -7483,7 +7479,7 @@ class PlotGUI(Tk.Frame):
         else:
             try:
                 fit_order = int(self.set_fitting_fields[1].get())
-            except:
+            except (ValueError, TypeError):
                 str1 = 'Error: bad fit order (%s).  Settng to 4.' % (
                     self.set_fitting_fields[1].get())
                 self.fit_text.insert(Tk.END, str1)
@@ -7739,11 +7735,12 @@ class PlotGUI(Tk.Frame):
         b1 = Tk.Frame(frame1)
         self.put_yes_no(b1, self.new_set, ['Yes', 'No'], True)
         b1.grid(column=1, row=0, sticky=Tk.W)
-        label1 = Tk.Label(holder, text="Enter the function you wish to apply.'\
-                          + '  Use $x for the x values of the \n'\
-                          + 'current set and $y for the y values of the '\
-                          + 'current set selected above.  \nOne can also '\
-                          + 'use $i for an index starting at 1.")
+        label_str = 'Enter the function you wish to apply.'\
+            + '  Use $x for the x values of the \n'\
+            + 'current set and $y for the y values of the '\
+            + 'current set selected above.  \nOne can also '\
+            + 'use $i for an index starting at 1.'
+        label1 = Tk.Label(holder, text=label_str)
         label1.pack(side=Tk.TOP)
         frame2 = Tk.Frame(holder)
         frame2.pack()
@@ -7794,7 +7791,7 @@ class PlotGUI(Tk.Frame):
             else:
                 self.add_set(x1, y1, current_plot=self.current_plot)
             self.make_plot()
-        except:
+        except ValueError:
             return
 
     def make_data_set_delete_window(self):
@@ -8113,7 +8110,7 @@ class PlotGUI(Tk.Frame):
                 ind1 = matplotlib_line_list.index(
                     self.set_properties[index]['linestyle'])
                 self.set_entry_fields[2].current(ind1)
-            except:
+            except ValueError:
                 self.set_entry_fields[2].current(4)
             self.set_entry_fields[3].delete(0, Tk.END)
             self.set_entry_fields[3].insert(
@@ -8121,7 +8118,7 @@ class PlotGUI(Tk.Frame):
             try:
                 self.set_entry_fields[4].set(
                     self.set_properties[index]['colour'])
-            except:
+            except (ValueError, TypeError):
                 self.set_entry_fields[4].current(10)
             if self.set_properties[index]['display']:
                 self.set_entry_fields[5].set(1)
@@ -8202,7 +8199,7 @@ class PlotGUI(Tk.Frame):
                 self.set_properties[index]['legend'] = False
             self.set_properties[index]['plot'] = target_plot
             self.make_plot()
-        except:
+        except ValueError:
             tkinter.messagebox.showinfo(
                 'Error',
                 'There was some error applying the values.'
@@ -8487,7 +8484,7 @@ class PlotGUI(Tk.Frame):
         try:
             self.ticklengthfield.insert(
                 0, str(self.xparameters[self.current_plot-1]['ticklength']))
-        except:
+        except TypeError:
             self.ticklengthfield.insert(0, '6')
             self.xparameters[self.current_plot-1]['ticklength'] = 6
             self.yparameters[self.current_plot-1]['ticklength'] = 6
@@ -8597,7 +8594,7 @@ class PlotGUI(Tk.Frame):
         holder.pack(side=Tk.TOP)
         # find the width for the separator line and apply it...
         outframe.update()
-        sl = self.separator_line(holder, outframe.winfo_width(), 5, 5, True)
+        self.separator_line(holder, outframe.winfo_width(), 5, 5, True)
         field1 = Tk.Frame(self.plot_control_window)
         field1.pack(side=Tk.TOP)
         apply_button = Tk.Button(field1, text="Apply",
@@ -8658,7 +8655,7 @@ class PlotGUI(Tk.Frame):
         lincanvas = Tk.Canvas(parent, height=h1, width=w1)
         try:
             lincanvas.pack(side=packvalue, fill=Tk.BOTH, expand=Tk.YES)
-        except:
+        except AttributeError:
             pass
         if flag:
             lincanvas.create_line(pad, h1/2, w1-pad, h1/2)
@@ -8793,14 +8790,14 @@ class PlotGUI(Tk.Frame):
             try:
                 self.xparameters[self.current_plot-1]['minorticks'] = \
                      float(self.xminortickfield.get())
-            except:
+            except ValueError:
                 self.xparameters[self.current_plot-1]['minorticks'] = 0.0
             if self.xparameters[self.current_plot-1]['minorticks'] < 0.0:
                 self.xparameters[self.current_plot-1]['minorticks'] = 0.0
             try:
                 self.yparameters[self.current_plot-1]['minorticks'] = \
                     float(self.yminortickfield.get())
-            except:
+            except ValueError:
                 self.yparameters[self.current_plot-1]['minorticks'] = 0.0
             if self.yparameters[self.current_plot-1]['minorticks'] < 0.0:
                 self.yparameters[self.current_plot-1]['minorticks'] = 0.0
@@ -8808,7 +8805,7 @@ class PlotGUI(Tk.Frame):
                 ticklength = int(self.ticklengthfield.get())
                 if ticklength < 1:
                     ticklength = 1
-            except:
+            except ValueError:
                 ticklength = 6
             self.xparameters[self.current_plot-1]['ticklength'] = ticklength
             self.yparameters[self.current_plot-1]['ticklength'] = ticklength
@@ -8818,7 +8815,7 @@ class PlotGUI(Tk.Frame):
                     self.plot_frame[self.current_plot-1] = 0.
                 else:
                     self.plot_frame[self.current_plot-1] = frame
-            except:
+            except ValueError:
                 self.plot_frame[self.current_plot-1] = 0.
             try:
                 margin = float(self.plot_margin_field.get())
@@ -8838,7 +8835,7 @@ class PlotGUI(Tk.Frame):
                     self.plot_margin_field.delete(0, Tk.END)
                     self.plot_margin_field.insert, (0, '-0.1')
                 self.plot_margin = margin
-            except:
+            except ValueError:
                 tkinter.messagebox.showinfo(
                     'Warning',
                     'Margin value could not be read, setting to zero.')
@@ -8855,7 +8852,7 @@ class PlotGUI(Tk.Frame):
                 self.plot_range[self.current_plot-1][1] = xmax
                 self.plot_range[self.current_plot-1][2] = ymin
                 self.plot_range[self.current_plot-1][3] = ymax
-            except:
+            except ValueError:
                 tkinter.messagebox.showinfo(
                     'Error',
                     'There was some error in the axis range values.'
@@ -8873,7 +8870,7 @@ class PlotGUI(Tk.Frame):
                             self.xparameters[loop][key] = self.xparameters[
                                 self.current_plot-1][key]
             self.make_plot()
-        except:
+        except ValueError:
             tkinter.messagebox.showinfo(
                 'Error',
                 'There was some error in the input values.  '
@@ -8978,7 +8975,7 @@ class PlotGUI(Tk.Frame):
                                      'line_colour': colour,
                                      'line_thickness': thickness})
                     nlines = nlines + 1
-                except:
+                except ValueError:
                     pass
         line_window.destroy()
         if nlines > self.max_lines:
@@ -9099,7 +9096,7 @@ class PlotGUI(Tk.Frame):
                                      'line_thickness': thickness,
                                      'fill_colour': fillcolour})
                     nboxes = nboxes + 1
-                except:
+                except ValueError:
                     pass
         box_window.destroy()
         if nboxes > self.max_boxes:
@@ -9224,7 +9221,7 @@ class PlotGUI(Tk.Frame):
                                         'line_thickness': thickness,
                                         'fill_colour': fillcolour})
                     nellipses = nellipses + 1
-                except:
+                except ValueError:
                     pass
         ellipse_window.destroy()
         if nellipses > self.max_ellipses:
@@ -9359,7 +9356,7 @@ class PlotGUI(Tk.Frame):
                                        'line_thickness': thickness,
                                        'fill': flag, 'fill_colour': hcolour})
                     nvectors = nvectors + 1
-                except:
+                except ValueError:
                     pass
         vector_window.destroy()
         if nvectors > self.max_vectors:
