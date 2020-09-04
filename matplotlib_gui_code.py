@@ -4,7 +4,7 @@
 matplotlib_gui_code.py is an interactive plotting tool using matplotlib.
 
 This is intended to be a front-end for a number of MATPLOTLIB functions similar
-in general usage to 'xmgrace" (although not intending to duplicate all the
+in general usage to "xmgrace" (although not intending to duplicate all the
 xmgrace funcionality...).  From the interface one is able to read in data and
 interactively change the plot properties (axes, symbols, lines, and so on).
 
