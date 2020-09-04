@@ -7735,11 +7735,7 @@ class PlotGUI(Tk.Frame):
         b1 = Tk.Frame(frame1)
         self.put_yes_no(b1, self.new_set, ['Yes', 'No'], True)
         b1.grid(column=1, row=0, sticky=Tk.W)
-        label_str = 'Enter the function you wish to apply.'\
-            + '  Use $x for the x values of the \n'\
-            + 'current set and $y for the y values of the '\
-            + 'current set selected above.  \nOne can also '\
-            + 'use $i for an index starting at 1.'
+        label_str = 'Enter the function you wish to apply.  Use $x for the x values of the current set and $y for the y values of the current set selected above.  \nOne can also use $i for an index starting at 1.'
         label1 = Tk.Label(holder, text=label_str)
         label1.pack(side=Tk.TOP)
         frame2 = Tk.Frame(holder)
@@ -7775,7 +7771,7 @@ class PlotGUI(Tk.Frame):
             xstr = xstr.replace('$i', 'seq')
             ystr = self.set_y_transformation_entry_field.get()
             ystr = ystr.replace('$y', 'y')
-            xstr = ystr.replace('$i', 'seq')
+            ystr = ystr.replace('$i', 'seq')
             x1 = self.my_eval(xstr, seq, xvalues, yvalues)
             y1 = self.my_eval(ystr, seq, xvalues, yvalues)
             if (x1 is None) or (y1 is None):
