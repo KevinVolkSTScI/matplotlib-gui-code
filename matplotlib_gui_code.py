@@ -7768,9 +7768,11 @@ class PlotGUI(Tk.Frame):
             seq = numpy.arange(len(xvalues)) + 1.
             xstr = self.set_x_transformation_entry_field.get()
             xstr = xstr.replace('$x', 'x')
+            xstr = xstr.replace('$y', 'y')
             xstr = xstr.replace('$i', 'seq')
             ystr = self.set_y_transformation_entry_field.get()
             ystr = ystr.replace('$y', 'y')
+            ystr = ystr.replace('$x', 'x')
             ystr = ystr.replace('$i', 'seq')
             x1 = self.my_eval(xstr, seq, xvalues, yvalues)
             y1 = self.my_eval(ystr, seq, xvalues, yvalues)
