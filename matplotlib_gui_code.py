@@ -587,7 +587,7 @@ def list_fitpars(fit_type, fit_order, fitpars):
     print('Order %d %s polynomial fit:' % (fit_order, fit_type), file=outfile)
     print('Parameter    Value', file=outfile)
     for loop in range(len(fitpars)):
-        print('%3d %f' % (loop, fitpars[loop]), file=outfile)
+        print('%3d %g' % (loop, fitpars[loop]), file=outfile)
     print(' ', file=outfile)
     outfile.close()
 
@@ -1247,7 +1247,7 @@ class PlotGUI(Tk.Frame):
                       file=outfile)
             print('# set properties', file=outfile)
             for loop in range(self.nsets):
-                str1 = '%s\t%f\t%s\t%f\t%s\t%s\t%f\t%f\t%f\t%f' % (
+                str1 = '%s\t%g\t%s\t%g\t%s\t%s\t%g\t%g\t%g\t%g' % (
                     self.set_properties[loop]['symbol'],
                     self.set_properties[loop]['symbolsize'],
                     self.set_properties[loop]['linestyle'],
@@ -1273,7 +1273,7 @@ class PlotGUI(Tk.Frame):
                 str1 = str1 + str(self.hide_subplot[loop]) + '\t'
             str1 = str1.rstrip('\t')
             print(str1, file=outfile)
-            print('# margin: %f ' % (self.plot_margin), file=outfile)
+            print('# margin: %g ' % (self.plot_margin), file=outfile)
             nplot = 0
             for n1 in range(self.nxplots):
                 for n2 in range(self.nyplots):
@@ -1288,8 +1288,8 @@ class PlotGUI(Tk.Frame):
                           (self.fontsize[nplot]), file=outfile)
                     print('# font weight: %s ' %
                           (self.fontweight[nplot]), file=outfile)
-                    strformat = '# x parameters: \t%s\t%f\t%f\t%f\t%f\t%d' \
-                                + '\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%f\t%d'
+                    strformat = '# x parameters: \t%s\t%g\t%g\t%g\t%g\t%d' \
+                                + '\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%g\t%d'
                     print(strformat % (
                         self.xparameters[nplot]['label'],
                         self.xparameters[nplot]['minimum'],
@@ -1308,8 +1308,8 @@ class PlotGUI(Tk.Frame):
                         self.xparameters[nplot]['minorticks'],
                         self.xparameters[nplot]['oppositeaxis']),
                           file=outfile)
-                    strformat = '# y parameters: \t%s\t%f\t%f\t%f\t%f\t%d' \
-                        + '\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%f\t%d'
+                    strformat = '# y parameters: \t%s\t%g\t%g\t%g\t%g\t%d' \
+                        + '\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%g\t%d'
                     print(strformat % (
                         self.yparameters[nplot]['label'],
                         self.yparameters[nplot]['minimum'],
@@ -1328,7 +1328,7 @@ class PlotGUI(Tk.Frame):
                         self.yparameters[nplot]['minorticks'],
                         self.yparameters[nplot]['oppositeaxis']),
                           file=outfile)
-                    print('# plot range: %f %f %f %f %s' % (
+                    print('# plot range: %g %g %g %g %s' % (
                         self.plot_range[nplot][0],
                         self.plot_range[nplot][1],
                         self.plot_range[nplot][2],
@@ -1348,8 +1348,8 @@ class PlotGUI(Tk.Frame):
                           (self.fontsize[nplot]), file=outfile)
                     print('# font weight: %s ' %
                           (self.fontweight[nplot]), file=outfile)
-                    strformat = '# x parameters: \t%s\t%f\t%f\t%f\t%f\t%d' \
-                                + '\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%f\t%d'
+                    strformat = '# x parameters: \t%s\t%g\t%g\t%g\t%g\t%d' \
+                                + '\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%g\t%d'
                     print(strformat % (
                         self.xparameters[nplot]['label'],
                         self.xparameters[nplot]['minimum'],
@@ -1368,8 +1368,8 @@ class PlotGUI(Tk.Frame):
                         self.xparameters[nplot]['minorticks'],
                         self.xparameters[nplot]['oppositeaxis']),
                           file=outfile)
-                    strformat = '# y parameters: \t%s\t%f\t%f\t%f\t%f\t%d' \
-                        + '\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%f\t%d'
+                    strformat = '# y parameters: \t%s\t%g\t%g\t%g\t%g\t%d' \
+                        + '\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%g\t%d'
                     print(strformat % (
                         self.yparameters[nplot]['label'],
                         self.yparameters[nplot]['minimum'],
@@ -1388,7 +1388,7 @@ class PlotGUI(Tk.Frame):
                         self.yparameters[nplot]['minorticks'],
                         self.yparameters[nplot]['oppositeaxis']),
                           file=outfile)
-                    print('# plot range: %f %f %f %f %s' % (
+                    print('# plot range: %g %g %g %g %s' % (
                         self.plot_range[nplot][0],
                         self.plot_range[nplot][1],
                         self.plot_range[nplot][2],
@@ -1398,7 +1398,7 @@ class PlotGUI(Tk.Frame):
             print('# number of labels: %d maximum: %d' %
                   (self.number_of_labels, self.max_labels), file=outfile)
             for loop in range(self.number_of_labels):
-                print('%f\t%f\t%d\t%s\t%s\t%d\t%s\t%s' % (
+                print('%g\t%g\t%d\t%s\t%s\t%d\t%s\t%s' % (
                     self.plot_labels[loop]['xposition'],
                     self.plot_labels[loop]['yposition'],
                     self.plot_labels[loop]['plot'],
@@ -1410,7 +1410,7 @@ class PlotGUI(Tk.Frame):
             print('# number of lines: %d maximum: %d ' %
                   (self.number_of_lines, self.max_lines), file=outfile)
             for loop in range(self.number_of_lines):
-                print('%f\t%f\t%f\t%f\t%d\t%s\t%s\t%f' % (
+                print('%g\t%g\t%g\t%g\t%d\t%s\t%s\t%f' % (
                     self.plot_lines[loop]['xstart'],
                     self.plot_lines[loop]['ystart'],
                     self.plot_lines[loop]['xend'],
@@ -1422,7 +1422,7 @@ class PlotGUI(Tk.Frame):
             print('# number of vectors: %d maximum: %d ' %
                   (self.number_of_vectors, self.max_vectors), file=outfile)
             for loop in range(self.number_of_vectors):
-                print('%f\t%f\t%f\t%f\t%f\t%f\t%d\t%s\t%s\t%f\t%5.5s\t%s' % (
+                print('%g\t%g\t%g\t%g\t%g\t%g\t%d\t%s\t%s\t%f\t%5.5s\t%s' % (
                     self.plot_vectors[loop]['xstart'],
                     self.plot_vectors[loop]['ystart'],
                     self.plot_vectors[loop]['xend'],
@@ -1438,7 +1438,7 @@ class PlotGUI(Tk.Frame):
             print('# number of ellipses: %d maximum: %d ' %
                   (self.number_of_ellipses, self.max_ellipses), file=outfile)
             for loop in range(self.number_of_ellipses):
-                print('%f\t%f\t%f\t%f\t%f\t%d\t%s\t%s\t%f\t%s' % (
+                print('%g\t%g\t%g\t%g\t%f\t%d\t%s\t%s\t%f\t%s' % (
                     self.plot_ellipses[loop]['xposition'],
                     self.plot_ellipses[loop]['yposition'],
                     self.plot_ellipses[loop]['major'],
@@ -1452,7 +1452,7 @@ class PlotGUI(Tk.Frame):
             print('# number of boxes: %d maximum: %d ' %
                   (self.number_of_boxes, self.max_boxes), file=outfile)
             for loop in range(self.number_of_boxes):
-                print('%f\t%f\t%f\t%f\t%f\t%d\t%s\t%s\t%f\t%s' % (
+                print('%g\t%g\t%g\t%g\t%f\t%d\t%s\t%s\t%f\t%s' % (
                     self.plot_boxes[loop]['xstart'],
                     self.plot_boxes[loop]['ystart'],
                     self.plot_boxes[loop]['xend'],
@@ -1477,7 +1477,7 @@ class PlotGUI(Tk.Frame):
                             self.legend_position[nplot],
                             self.legend_options[nplot].get())
                         try:
-                            str1 = str1 + '%f\t%f' % (
+                            str1 = str1 + '%g\t%g' % (
                                 self.legend_user_position[nplot][0],
                                 self.legend_user_position[nplot][1])
                         except:
@@ -1496,7 +1496,7 @@ class PlotGUI(Tk.Frame):
                             self.legend_position[nplot],
                             self.legend_options[nplot].get())
                         try:
-                            str1 = str1 + '%f\t%f' % (
+                            str1 = str1 + '%g\t%g' % (
                                 self.legend_user_position[nplot][0],
                                 self.legend_user_position[nplot][1])
                         except (AttributeError, TypeError):
@@ -6171,7 +6171,7 @@ class PlotGUI(Tk.Frame):
 
         """
         try:
-            s1 = 'Position: [%f, %f]' % (event.xdata, event.ydata)
+            s1 = 'Position: [%g, %g]' % (event.xdata, event.ydata)
             self.histogramLabelText.set(s1)
         except (TypeError, ValueError):
             pass
@@ -6196,7 +6196,7 @@ class PlotGUI(Tk.Frame):
         try:
             ix = bisect.bisect(self.xedges, event.xdata)
             iy = bisect.bisect(self.yedges, event.ydata)
-            s1 = 'Position: [%f, %f] Value: %d' % (event.xdata, event.ydata,
+            s1 = 'Position: [%g, %g] Value: %d' % (event.xdata, event.ydata,
                                                    self.hist2d[ix, iy])
             self.hessLabelText.set(s1)
         except (ValueError, TypeError):
@@ -7540,8 +7540,8 @@ class PlotGUI(Tk.Frame):
             labelstring = 'Standard linear fit'
             rms = numpy.sqrt(numpy.mean((yvalues-yfit)*(yvalues-yfit)))
             str1 = 'Regression calculation results:\n'
-            str1 = str1 + 'Slope: %f +/- %f\n' % (slope, slope_error)
-            str1 = str1 + 'Intercept: %f +/- %f\n' % (
+            str1 = str1 + 'Slope: %g +/- %g\n' % (slope, slope_error)
+            str1 = str1 + 'Intercept: %g +/- %g\n' % (
                 intercept, intercept_error)
             str1 = str1 + 'Covariance: %f\n' % (covariance)
             str1 = str1 + 'Correlation: %f\n' % (correlation)
