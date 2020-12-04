@@ -11,7 +11,7 @@ variable is set properly (the author does not use Microsoft Windows and so does
 not know what the equivalent is in such computers).  The code uses matplotlib
 and tkinter as well as other standard Python packages.
 
-** Note: MacOS 10.14 Mojave Issue With Python version 3.7
+## Note: MacOS 10.14 Mojave Issue With Python version 3.7
 
 The code here uses the Tkinter package that is part of the standard Python 
 distribution.  In the MacOS version 10.14 (Majave) there is an issue that
@@ -22,7 +22,7 @@ version as far as the author is aware.    There is no solution for this issue
 within Python.  Hence, do not use this code with that particular combination
 of MacOS 10.14 and Python 3.7.
 
-** Installation and Set-Up
+## Installation and Set-Up
 
 To install the code one needs to copy the repository to some directory, which
 will be called /your/path/to/the/files/ in the documentation.  Substitute the
@@ -63,7 +63,7 @@ export PATH='/your/path/to/the/files:$PATH'
 
 in bash.  This assumes that the $PATH variable is already defined.
 
-** Starting the code
+## Starting the code
 
 Assuming that the installation worked as expected, one can then import
 the plot interface and start it via Python commands such as
@@ -78,7 +78,7 @@ using the interface and adding data sets from the Python interpreter.  The
 "myplot" variable is an object that runs the interface.  The "root" variable
 is a Tkinter variable for the plot window.
 
-** Use of the code
+## Use of the code
 
 The code assumes that one will want to read in data values, possibly with
 associated uncertainties, from an ascii file.  One can have one or more "sets"
