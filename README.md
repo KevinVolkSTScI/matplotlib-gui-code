@@ -32,13 +32,13 @@ in a new directory.
 When the code is unpacked in the target directory you should see the following
 files in the directory:
 
-LICENSE
-README.md
-matplotlib_driver_code_documentation.docx
-matplotlib_driver_code_documentation.pdf
-setup.py
-src
-tests
+LICENSE  
+README.md  
+matplotlib_driver_code_documentation.docx  
+matplotlib_driver_code_documentation.pdf  
+setup.py  
+src  
+tests  
 
 The tests directory is a placeholder and is currently empty.  The code itself
 is in the src directory.
@@ -68,8 +68,7 @@ in bash.  This assumes that the $PATH variable is already defined.
 Assuming that the installation worked as expected, one can then import
 the plot interface and start it via Python commands such as
 
-\>\>\> import matplotlib_user_interface as mui
-
+\>\>\> import matplotlib_user_interface as mui  
 \>\>\> root, myplot = mui.startup()
 
 This will cause a new window to open with the interface controls.  See the
@@ -90,20 +89,18 @@ the code was started that way.  The latter process is to do the following,
 once root and myplot are created as noted above.  First create the x and y
 values in Python as one-dimensional numpy arrays, for example
 
-\>\>\> import numpy
-
-\>\>\> xvalues = numpy.arange(0, 100, 1)
-
+\>\>\> import numpy  
+\>\>\> xvalues = numpy.arange(0, 100, 1)  
 \>\>\> yvalues = numpy.sqrt(xvalues)
 
 Once the x and y values are defined in the interpreter, one can load them into
 the plot object
 
-\>\>\> myplot.add_set(xvalues, yvalues)
+\>\>\> myplot.add_set(xvalues, yvalues)  
 
 and then tell the code to replot the plot(s) associated with the myplot object
 
-\>\>\> mui.make_plot.make_plot(myplot)
+\>\>\> mui.make_plot.make_plot(myplot)  
 
 One can add multiple sets to the interface by making additional calls to
 the add_set method of the object.
