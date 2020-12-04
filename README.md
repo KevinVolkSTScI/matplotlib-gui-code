@@ -69,6 +69,7 @@ Assuming that the installation worked as expected, one can then import
 the plot interface and start it via Python commands such as
 
 \>\>\> import matplotlib_user_interface as mui
+
 \>\>\> root, myplot = mui.startup()
 
 This will cause a new window to open with the interface controls.  See the
@@ -90,17 +91,19 @@ once root and myplot are created as noted above.  First create the x and y
 values in Python as one-dimensional numpy arrays, for example
 
 \>\>\> import numpy
+
 \>\>\> xvalues = numpy.arange(0, 100, 1)
+
 \>\>\> yvalues = numpy.sqrt(xvalues)
 
 Once the x and y values are defined in the interpreter, one can load them into
 the plot object
 
->>> myplot.add_set(xvalues, yvalues)
+\>\>\> myplot.add_set(xvalues, yvalues)
 
 and then tell the code to replot the plot(s) associated with the myplot object
 
->>> mui.make_plot.make_plot(myplot)
+\>\>\> mui.make_plot.make_plot(myplot)
 
 One can add multiple sets to the interface by making additional calls to
 the add_set method of the object.
