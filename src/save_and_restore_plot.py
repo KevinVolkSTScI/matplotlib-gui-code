@@ -1096,6 +1096,8 @@ def parse_save_file(plotgui, lines, flag):
                     vectors[loop]['line_colour']
                 plotgui.plot_vectors[loop]['line_thickness'] = \
                     vectors[loop]['line_thickness']
+                plotgui.plot_vectors[loop]['fill'] = vectors[loop]['fill']
+                plotgui.plot_vectors[loop]['fill_colour'] = vectors[loop]['fill_colour']
         if len(ellipses) > 0:
             plotgui.number_of_ellipses = len(ellipses)
             for loop in range(len(ellipses)):
