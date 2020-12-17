@@ -591,6 +591,22 @@ class PlotGUI(Tk.Frame):
             label='Save as postscript',
             command=lambda: general_utilities.save_ps_figure(self.figure))
 
+    def show_plot(self):
+        """
+        Wrapper routine for displaying the plot.
+
+        Parameters
+        ----------
+
+        None
+
+        Returns
+        -------
+
+        None
+        """
+        make_plot.make_plot(self)
+        
     def read_image(self):
         """
         Read in a FITS 2-D image for display.
