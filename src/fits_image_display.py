@@ -719,7 +719,7 @@ class ImageGUI(Tk.Frame):
         zmax = numpy.max(self.image)
         general_utilities.put_value(zmin, self.minField)
         general_utilities.put_value(zmax, self.maxField)
-        zmin1, zmax1 = sel.get_limits(self.image)
+        zmin1, zmax1 = self.get_limits(self.image)
         general_utilities.put_value(zmin1, self.zsminField)
         general_utilities.put_value(zmax1, self.zsmaxField)
         self.displayImage()

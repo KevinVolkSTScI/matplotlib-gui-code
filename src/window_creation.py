@@ -373,6 +373,27 @@ def make_controls(plotgui, parent):
     plotgui.npixelfield = Tk.Entry(field, width=5)
     plotgui.npixelfield.pack(side=Tk.TOP)
     plotgui.npixelfield.insert(0, '500')
+    plotgui.overplotflag = Tk.IntVar()
+    h1 = Tk.Frame(holder)
+    h1.pack(side=Tk.TOP)
+    plotgui.hessindividualhistogramflag = Tk.IntVar()
+    b1 = Tk.Frame(h1)
+    general_utilities.put_yes_no(b1, plotgui.hessindividualhistogramflag,
+                       ['all sets', 'one set'], True)
+    b1.pack(side=Tk.LEFT)
+    b1 = Tk.Frame(h1)
+    plotgui.hess_set_field = Tk.Entry(b1, width=5)
+    plotgui.hess_set_field.insert(0, '1')
+    plotgui.hess_set_field.pack(side=Tk.LEFT)
+    b1.pack(side=Tk.LEFT)
+    h1 = Tk.Frame(holder)
+    h1.pack(side=Tk.TOP)
+    label1 = Tk.Label(h1, text='Overplot Sets: ')
+    label1.pack(side=Tk.LEFT)
+    b1 = Tk.Frame(h1)
+    general_utilities.put_yes_no(b1, plotgui.overplotflag,
+                                 ['Yes', 'No'], True, )
+    b1.pack(side=Tk.LEFT)
     sl = general_utilities.separator_line(holder, 300, 25, 5, True)
     button4 = Tk.Button(
         holder, text='1-D Histogram',
@@ -390,8 +411,9 @@ def make_controls(plotgui, parent):
     general_utilities.put_yes_no(b1, plotgui.histogramflag,
                        ['x values', 'y values'], True)
     b1.pack(side=Tk.TOP)
-    plotgui.individualhistogramflag = Tk.IntVar()
+    plotgui.histogramflag = Tk.IntVar()
     b1 = Tk.Frame(holder)
+    plotgui.individualhistogramflag = Tk.IntVar()
     general_utilities.put_yes_no(b1, plotgui.individualhistogramflag,
                        ['all sets', 'individual sets'], True)
     b1.pack(side=Tk.TOP)

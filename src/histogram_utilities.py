@@ -17,6 +17,7 @@ from matplotlib.colors import LogNorm
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Rectangle, Ellipse, FancyArrow
 from matplotlib.ticker import MultipleLocator
+import general_utilities
 
 
 def make_histogram(plotgui):
@@ -224,17 +225,29 @@ def make_hess_plot(plotgui):
         xmax = plotgui.plot_range[plotgui.current_plot-1][1]
         ymin = plotgui.plot_range[plotgui.current_plot-1][2]
         ymax = plotgui.plot_range[plotgui.current_plot-1][3]
+        allflag = plotgui.hessindividualhistogramflag.get()
+        overplot = plotgui.overplotflag.get()
+        try:
+            set_number = int(plotgui.hess_set_field.get())
+            if (set_number < 1) or (set_number < plotgui.nsets):
+                set_number = 1
+        except:
+            set_number = 1
         xp = None
         yp = None
-        for loop in range(plotgui.nsets):
-            if (plotgui.set_properties[loop]['display']) and \
-               (plotgui.set_properties[loop]['plot'] == plotgui.current_plot):
-                if xp is None:
-                    xp = numpy.copy(plotgui.xdata[loop]['values'])
-                    yp = numpy.copy(plotgui.ydata[loop]['values'])
-                else:
-                    xp = numpy.append(xp, plotgui.xdata[loop]['values'])
-                    yp = numpy.append(yp, plotgui.ydata[loop]['values'])
+        if allflag == 1:
+            for loop in range(plotgui.nsets):
+                if (plotgui.set_properties[loop]['display']) and \
+                   (plotgui.set_properties[loop]['plot'] == plotgui.current_plot):
+                    if xp is None:
+                        xp = numpy.copy(plotgui.xdata[loop]['values'])
+                        yp = numpy.copy(plotgui.ydata[loop]['values'])
+                    else:
+                        xp = numpy.append(xp, plotgui.xdata[loop]['values'])
+                        yp = numpy.append(yp, plotgui.ydata[loop]['values'])
+        else:
+            xp = numpy.copy(plotgui.xdata[set_number-1]['values'])
+            yp = numpy.copy(plotgui.ydata[set_number-1]['values'])
         plotgui.hessLabelText = Tk.StringVar()
         plotgui.hessLabel = Tk.Label(
             hesswindow,
@@ -259,6 +272,41 @@ def make_hess_plot(plotgui):
         plotgui.hist2d, plotgui.xedges, plotgui.yedges, image = sp1.hist2d(
             xp, yp, npixels, range=[[xmin, xmax], [ymin, ymax]],
             norm=LogNorm())
+        if (overplot == 1) and (allflag == 0):
+            for loop in range(plotgui.nsets):
+                if loop != set_number-1:
+                    if (plotgui.set_properties[loop]['display']) and \
+                       (plotgui.set_properties[loop]['plot'] == \
+                        plotgui.current_plot):
+                        if plotgui.set_properties[loop]['symbol'] is None:
+                            sp1.plot(
+                                plotgui.xdata[loop]['values'],
+                                plotgui.ydata[loop]['values'],
+                                color=plotgui.set_properties[loop]['colour'],
+                                linestyle=
+                                plotgui.set_properties[loop]['linestyle'],
+                                linewidth=
+                                plotgui.set_properties[loop]['linewidth'])
+                        elif plotgui.set_properties[loop]['linestyle'] is None:
+                            sp1.plot(
+                                plotgui.xdata[loop]['values'],
+                                plotgui.ydata[loop]['values'],
+                                color=plotgui.set_properties[loop]['colour'],
+                                marker=plotgui.set_properties[loop]['symbol'],
+                                linestyle='none', markersize=
+                                plotgui.set_properties[loop]['symbolsize'])
+                        else:
+                            sp1.plot(
+                                plotgui.xdata[loop]['values'],
+                                plotgui.ydata[loop]['values'],
+                                color=plotgui.set_properties[loop]['colour'],
+                                marker=plotgui.set_properties[loop]['symbol'],
+                                linestyle=
+                                plotgui.set_properties[loop]['linestyle'],
+                                markersize=
+                                plotgui.set_properties[loop]['symbolsize'],
+                                linewidth=
+                                plotgui.set_properties[loop]['linewidth'])
         sp1.set_xlabel(plotgui.xparameters[plotgui.current_plot-1]['label'],
                        family=plotgui.fontname[plotgui.current_plot-1],
                        size=plotgui.fontsize[plotgui.current_plot-1],
