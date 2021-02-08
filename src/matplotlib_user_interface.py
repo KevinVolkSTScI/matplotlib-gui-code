@@ -816,13 +816,13 @@ class PlotGUI(Tk.Frame):
                 dminset = numpy.copy(distances[dargmin])
                 try:
                     dminhere = dminset[0]
-                except ValueError:
+                except IndexError:
                     dminhere = dminset
                 if (dmin < 0.) or (dminhere < dmin):
                     nset = loop
                     try:
                         ndata = dargmin[0]
-                    except TypeError:
+                    except IndexError:
                         ndata = dargmin
                     dmin = dminhere
                     xmin = xdata[ndata]
