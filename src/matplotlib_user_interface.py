@@ -381,6 +381,7 @@ class PlotGUI(Tk.Frame):
         self.current_plot = 1
         self.number_of_plots = self.nxplots * self.nyplots
         self.plot_area_flag = True
+        self.zoom_flag = False
         self.save_version = 1.0
         if parent is not None:
             # initialize the window and make the plot area.
@@ -888,6 +889,9 @@ class PlotGUI(Tk.Frame):
         if self.ellipse_flag:
             self.positions.append(position)
             return
+        self.zoom_flag = True
+        self.positions.append(position)
+        return
 
     def plot_marker_release(self, event):
         """
@@ -926,6 +930,23 @@ class PlotGUI(Tk.Frame):
         if self.box_flag:
             self.positions.append(position)
             object_utilities.add_box_values(self)
+        if self.zoom_flag:
+            self.zoom_flag = False
+            if xvalue > self.positions[0][0]:
+                xmin = self.positions[0][0]
+                xmax = xvalue
+            else:
+                xmin = xvalue
+                xmax = self.positions[0][0]
+            if yvalue > self.positions[0][1]:
+                ymin = self.positions[0][1]
+                ymax = yvalue
+            else:
+                ymin = yvalue
+                ymax = self.positions[0][1]
+            if (xmin != xmax) and (ymin != ymax):
+                self.original_range[self.current_plot-1] = False
+                self.plot_range[self.current_plot-1] = [xmin, xmax, ymin, ymax]
         make_plot.make_plot(self)
 
     def histogram_position(self, event):
