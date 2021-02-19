@@ -112,63 +112,9 @@ def make_plot_control_window(plotgui):
     # Note it is not possible to put in the line height
     # automatically as the frames it is intended to match has
     # not been packed yet.
-    sl = general_utilities.separator_line(holder1, 5, 500, 5, False)
+    sl = general_utilities.separator_line(holder1, 5, 550, 5, False)
     holder2 = Tk.Frame(outframe)
     holder2.pack(side=Tk.LEFT)
-    flag = plotgui.xparameters[plotgui.current_plot-1]['logarithmic'] == 1
-    plotgui.logx_variable = general_utilities.add_yes_no_field(
-        holder2, "logarithmic x axis", flag) 
-    flag = plotgui.xparameters[plotgui.current_plot-1]['hybridlog'] == 1
-    plotgui.hlogx_variable = general_utilities.add_yes_no_field(
-        holder2, "hybrid log x axis", flag) 
-    flag = plotgui.yparameters[plotgui.current_plot-1]['logarithmic'] == 1
-    plotgui.logy_variable = general_utilities.add_yes_no_field(
-        holder2, "logarithmic y axis", flag) 
-    flag = plotgui.yparameters[plotgui.current_plot-1]['hybridlog'] == 1
-    plotgui.hlogy_variable = general_utilities.add_yes_no_field(
-        holder2, "hybrid log y axis", flag) 
-    flag = plotgui.xparameters[plotgui.current_plot-1]['invert'] == 1
-    plotgui.invertx_variable = general_utilities.add_yes_no_field(
-        holder2, "invert x axis", flag) 
-    flag = plotgui.yparameters[plotgui.current_plot-1]['invert'] == 1
-    plotgui.inverty_variable = general_utilities.add_yes_no_field(
-        holder2, "invert y axis", flag) 
-    flag = plotgui.xparameters[plotgui.current_plot-1]['hide'] == 1
-    plotgui.hidex_variable = general_utilities.add_yes_no_field(
-        holder2, "hide x axis", flag) 
-    flag = plotgui.yparameters[plotgui.current_plot-1]['hide'] == 1
-    plotgui.hidey_variable = general_utilities.add_yes_no_field(
-        holder2, "hide y axis", flag) 
-    flag = plotgui.xparameters[plotgui.current_plot-1]['hideticks'] == 1
-    plotgui.hidexticks_variable = general_utilities.add_yes_no_field(
-        holder2, "hide x ticks", flag) 
-    flag = plotgui.yparameters[plotgui.current_plot-1]['hideticks'] == 1
-    plotgui.hideyticks_variable = general_utilities.add_yes_no_field(
-        holder2, "hide y ticks", flag) 
-    flag = plotgui.xparameters[plotgui.current_plot-1]['hidelabels'] == 1
-    plotgui.hidexlabels_variable = general_utilities.add_yes_no_field(
-        holder2, "hide x labels", flag) 
-    flag = plotgui.yparameters[plotgui.current_plot-1]['hidelabels'] == 1
-    plotgui.hideylabels_variable = general_utilities.add_yes_no_field(
-        holder2, "hide y labels", flag) 
-    flag = plotgui.xparameters[plotgui.current_plot-1]['bothticks'] == 1
-    plotgui.bothxticks_variable = general_utilities.add_yes_no_field(
-        holder2, "x ticks both sides", flag) 
-    flag = plotgui.yparameters[plotgui.current_plot-1]['bothticks'] == 1
-    plotgui.bothyticks_variable = general_utilities.add_yes_no_field(
-        holder2, "y ticks both sides", flag) 
-    flag = plotgui.xparameters[plotgui.current_plot-1]['oppositeaxis'] == 1
-    plotgui.oppositex_variable = general_utilities.add_yes_no_field(
-        holder2, "opposite x axis", flag) 
-    flag = plotgui.yparameters[plotgui.current_plot-1]['oppositeaxis'] == 1
-    plotgui.oppositey_variable = general_utilities.add_yes_no_field(
-        holder2, "opposite y axis", flag) 
-    flag = plotgui.xparameters[plotgui.current_plot-1]['inverseticks'] == 1
-    plotgui.inversexticks_variable = general_utilities.add_yes_no_field(
-        holder2, "invert x ticks", flag) 
-    flag = plotgui.yparameters[plotgui.current_plot-1]['inverseticks'] == 1
-    plotgui.inverseyticks_variable = general_utilities.add_yes_no_field(
-        holder2, "invert y ticks", flag) 
     flag = plotgui.xparameters[plotgui.current_plot-1]['majorgridlines'] == 1
     plotgui.majorxgrid_variable = general_utilities.add_yes_no_field(
         holder2, "major x grid", flag) 
@@ -181,6 +127,63 @@ def make_plot_control_window(plotgui):
     flag = plotgui.yparameters[plotgui.current_plot-1]['minorgridlines'] == 1
     plotgui.minorygrid_variable = general_utilities.add_yes_no_field(
         holder2, "minor y grid", flag) 
+    sl = general_utilities.separator_line(holder2, 200, 5, 5, True)
+    flag = plotgui.xparameters[plotgui.current_plot-1]['logarithmic'] == 1
+    plotgui.logx_variable = general_utilities.add_yes_no_field(
+        holder2, "logarithmic x axis", flag) 
+    flag = plotgui.xparameters[plotgui.current_plot-1]['hybridlog'] == 1
+    plotgui.hlogx_variable = general_utilities.add_yes_no_field(
+        holder2, "hybrid log x axis", flag) 
+    flag = plotgui.yparameters[plotgui.current_plot-1]['logarithmic'] == 1
+    plotgui.logy_variable = general_utilities.add_yes_no_field(
+        holder2, "logarithmic y axis", flag) 
+    flag = plotgui.yparameters[plotgui.current_plot-1]['hybridlog'] == 1
+    plotgui.hlogy_variable = general_utilities.add_yes_no_field(
+        holder2, "hybrid log y axis", flag) 
+    sl = general_utilities.separator_line(holder2, 200, 5, 5, True)
+    flag = plotgui.xparameters[plotgui.current_plot-1]['invert'] == 1
+    plotgui.invertx_variable = general_utilities.add_yes_no_field(
+        holder2, "invert x axis", flag) 
+    flag = plotgui.yparameters[plotgui.current_plot-1]['invert'] == 1
+    plotgui.inverty_variable = general_utilities.add_yes_no_field(
+        holder2, "invert y axis", flag) 
+    flag = plotgui.xparameters[plotgui.current_plot-1]['hide'] == 1
+    plotgui.hidex_variable = general_utilities.add_yes_no_field(
+        holder2, "hide x axis", flag) 
+    flag = plotgui.yparameters[plotgui.current_plot-1]['hide'] == 1
+    plotgui.hidey_variable = general_utilities.add_yes_no_field(
+        holder2, "hide y axis", flag) 
+    flag = plotgui.xparameters[plotgui.current_plot-1]['oppositeaxis'] == 1
+    plotgui.oppositex_variable = general_utilities.add_yes_no_field(
+        holder2, "opposite x axis", flag) 
+    flag = plotgui.yparameters[plotgui.current_plot-1]['oppositeaxis'] == 1
+    plotgui.oppositey_variable = general_utilities.add_yes_no_field(
+        holder2, "opposite y axis", flag) 
+    sl = general_utilities.separator_line(holder2, 200, 5, 5, True)
+    flag = plotgui.xparameters[plotgui.current_plot-1]['hidelabels'] == 1
+    plotgui.hidexlabels_variable = general_utilities.add_yes_no_field(
+        holder2, "hide x labels", flag) 
+    flag = plotgui.yparameters[plotgui.current_plot-1]['hidelabels'] == 1
+    plotgui.hideylabels_variable = general_utilities.add_yes_no_field(
+        holder2, "hide y labels", flag) 
+    flag = plotgui.xparameters[plotgui.current_plot-1]['hideticks'] == 1
+    plotgui.hidexticks_variable = general_utilities.add_yes_no_field(
+        holder2, "hide x ticks", flag) 
+    flag = plotgui.yparameters[plotgui.current_plot-1]['hideticks'] == 1
+    plotgui.hideyticks_variable = general_utilities.add_yes_no_field(
+        holder2, "hide y ticks", flag) 
+    flag = plotgui.xparameters[plotgui.current_plot-1]['bothticks'] == 1
+    plotgui.bothxticks_variable = general_utilities.add_yes_no_field(
+        holder2, "x ticks both sides", flag) 
+    flag = plotgui.yparameters[plotgui.current_plot-1]['bothticks'] == 1
+    plotgui.bothyticks_variable = general_utilities.add_yes_no_field(
+        holder2, "y ticks both sides", flag) 
+    flag = plotgui.xparameters[plotgui.current_plot-1]['inverseticks'] == 1
+    plotgui.inversexticks_variable = general_utilities.add_yes_no_field(
+        holder2, "invert x ticks", flag) 
+    flag = plotgui.yparameters[plotgui.current_plot-1]['inverseticks'] == 1
+    plotgui.inverseyticks_variable = general_utilities.add_yes_no_field(
+        holder2, "invert y ticks", flag) 
     #
     field1 = Tk.Frame(holder)
     field1.pack(side=Tk.TOP)
