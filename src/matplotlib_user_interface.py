@@ -470,6 +470,9 @@ class PlotGUI(Tk.Frame):
             label='Set Statistics',
             command=lambda: data_set_utilities.set_statistics(self))
         menu2.add_command(
+            label='Block Average',
+            command=lambda: data_set_utilities.block_average(self))
+        menu2.add_command(
             label='Transform Set',
             command=lambda:\
             data_set_operations.make_data_set_transformation_window(self))
