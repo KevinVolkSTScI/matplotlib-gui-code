@@ -705,7 +705,7 @@ def separator_line(parent, w1, h1, pad, flag, packvalue=Tk.TOP,
 
 def put_yes_no(root, var, labels, flag):
     """
-    Create a Tkineter yes/no radio button.
+    Create a Tkinter yes/no radio button.
 
     This is a utility routine to make a yes/no radio button in Tkinter.
     The required variables are passed to the code and it produces the

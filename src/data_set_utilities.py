@@ -9,6 +9,7 @@ from tkinter.colorchooser import askcolor
 from tkinter.scrolledtext import ScrolledText
 import general_utilities
 import make_plot
+import interpolation_utilities
 
 def create_data_set(plotgui):
     """
@@ -492,3 +493,94 @@ def set_statistics(plotgui):
                              command=stat_window.destroy)
     close_button.pack()
 
+def block_average(plotgui):
+    """
+    Make a new set by block averaging.
+
+    A window is made in which to determine the parameters of the averaging, 
+    whereupon a new set is made with the block averaged values.
+
+    Parameters
+    ----------
+
+        plotgui:   by assumption a matplotlib_user_interface object
+
+    Returns
+    -------
+
+        None
+
+    """
+    if plotgui.nsets == 0:
+        return
+    block_window = Tk.Toplevel()
+    block_window.title('Block Average Data Set')
+    holder = Tk.Frame(block_window)
+    holder.pack(side=Tk.TOP)
+    h1 = Tk.Frame(holder)
+    h1.pack(side=Tk.TOP)
+    label1 = Tk.Label(h1, text='Number of samples to average:')
+    label1.pack(side=Tk.LEFT)
+    plotgui.block_average_field = Tk.Entry(h1, width=12)
+    plotgui.block_average_field.pack(side=Tk.LEFT)
+    plotgui.block_average_field.insert(0, '10')
+    h1 = Tk.Frame(holder)
+    h1.pack(side=Tk.TOP)
+    label2 = Tk.Label(h1, text='                   Clip set:')
+    label2.pack(side=Tk.LEFT)
+    plotgui.block_average_clip_variable = Tk.IntVar()
+    bframe = Tk.Frame(h1)
+    bframe.pack(side=Tk.LEFT)
+    general_utilities.put_yes_no(bframe, plotgui.block_average_clip_variable,
+                                 ['yes', 'no'], False)
+    bholder = Tk.Frame(holder)
+    bholder.pack(side=Tk.TOP)
+    button1 = Tk.Button(bholder, text='Apply',
+                        command=lambda: do_block_average(plotgui))
+    button1.pack(side=Tk.LEFT)
+    label1 = Tk.Label(bholder, text='   ')
+    label1.pack(side=Tk.LEFT)
+    button2 = Tk.Button(bholder, text='Close', command=block_window.destroy)
+    button2.pack(side=Tk.LEFT)
+
+def do_block_average(plotgui):
+    """
+    Take the block averaging parameters and make a new data set.
+
+    Parameters
+    ----------
+
+        plotgui:   by assumption a matplotlib_user_interface object
+
+    Returns
+    -------
+
+        None
+
+    """
+    if True:
+#    try:
+        nsample = int(plotgui.block_average_field.get())
+        npoints = len(
+            plotgui.xdata[plotgui.current_plot-1]['values'])
+        xdata = numpy.copy(
+            plotgui.xdata[plotgui.current_plot-1]['values'])
+        ydata = numpy.copy(
+            plotgui.ydata[plotgui.current_plot-1]['values'])
+        if (nsample < 2) or (nsample > npoints//2):
+            tkinter.messagebox.showinfo(
+                'Error',
+                'Bad Nsamples value (%d)' % (nsample))
+            return
+        flag = (plotgui.block_average_clip_variable.get() == 0)
+        xnew, ynew = interpolation_utilities._smoother(
+            xdata, ydata, nsample, clip=flag)
+        str1 = '%d element block average of set %d' % (nsample,
+                                                       plotgui.current_plot)
+        plotgui.add_set(xnew, ynew, labelstring=str1,
+                        current_plot=plotgui.current_plot)
+        make_plot.make_plot(plotgui)
+#    except:
+#        tkinter.messagebox.showinfo(
+#            'Error',
+#            'Unable to do the block averaging.  Please check your inputs.')
