@@ -11,7 +11,7 @@ from tkinter.colorchooser import askcolor
 from tkinter.scrolledtext import ScrolledText
 import numpy
 from numpy.polynomial import polynomial, legendre, laguerre, chebyshev
-from scipy.interpolate import UnivariateSpline
+from scipy.interpolate import UnivariateSpline, make_lsq_spline
 import matplotlib
 import matplotlib.lines as mlines
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -358,7 +358,7 @@ def make_data_set_fitting_window(plotgui):
     plotgui.set_fitting_fields[-1]['values'] = [
         'Polynomial', 'Legendre',
         'Chebyshev', 'Laguerre', 'Spline', 'Cubic Spline',
-        'Internal Linear Fit']
+        'Least-Squares Spline', 'Internal Linear Fit']
     plotgui.set_fitting_fields[-1].current(1)
     plotgui.set_fitting_fields.append(Tk.Entry(frame1, width=15, text='4'))
     plotgui.set_fitting_fields[-1].grid(column=1, row=1, sticky=Tk.W)
@@ -462,7 +462,7 @@ def apply_fitting_fields(plotgui):
     xvalues = xvalues[inds]
     yvalues = yvalues[inds]
     npoints = len(xvalues)
-    if ('Cubic' not in fit_type) and ('Internal' not in fit_type):
+    if ('Spline' not in fit_type) and ('Internal' not in fit_type):
         if npoints + 1 <= fit_order:
             tkinter.messagebox.showinfo(
                 'Error',
@@ -472,8 +472,8 @@ def apply_fitting_fields(plotgui):
     xmin = numpy.min(xvalues)
     xmax = numpy.max(xvalues)
     delx = xmax - xmin
-    xstep = ((xmax - xmin) + 2 * delx)/1001.
-    xout = numpy.arange(xmin-delx, xmax+delx, xstep)
+    xstep = 1.2*delx/1201.
+    xout = numpy.arange(xmin-delx/10., xmax+delx/10., xstep)
     if 'Internal' in fit_type:
         if npoints < 2:
             tkinter.messagebox.showinfo(
@@ -541,9 +541,37 @@ def apply_fitting_fields(plotgui):
         yfit = chebyshev.chebval(xvalues, fitpars)
         labelstring = 'Order %d Chebyshev polynomial fit' % (fit_order)
         general_utilities.list_polynomial_fitpars(fit_type, fit_order, fitpars)
+    if fit_type == 'Least-Squares Spline':
+        if fit_flag == 0:
+            yerrors = (self.ydata[set_number]['lowerror'] +
+                       self.ydata[set_number]['higherror'])/2.
+        else:
+            yerrors = (self.xdata[set_number]['lowerror'] +
+                       self.xdata[set_number]['higherror'])/2.
+        if (numpy.min(yerrors) == 0.) and (numpy.max(yerrors) == 0.):
+            yerrors = yerrors + 1.
+        xmin1 = numpy.min(xvalues)
+        xmax1 = numpy.max(xvalues)
+        xrange = xmax1 - xmin1
+        nknots = int(fit_order)
+        if (nknots < 3) or (nknots > int(len(xvalues)/2)):
+            nknots = 3
+        xstep = xrange/(nknots-2)
+        xknots = numpy.arange(numpy.min(xvalues)+xstep,
+                              numpy.max(xvalues)*0.999999999, xstep)
+        k = 3
+        # Use cubic splines
+        knotedges = numpy.r_[(xmin,)*(k+1), xknots, (xmax,)*(k+1)]
+        weights = 1./yerrors
+        weights[yerrors == 0.] = 0.
+        fitobject = make_lsq_spline(xvalues, yvalues, knotedges, k,
+                                    w=weights)
+        yout = fitobject(xout)
+        yfit = fitobject(xvalues)
+        labelstring = 'Least squares spline fit, sections = %d' % (nknots)
     if fit_type == 'Spline':
         fitpars = UnivariateSpline(
-            xvalues, yvalues, k=3, s=None, bbox=[xmin - delx, xmax + delx])
+            xvalues, yvalues, k=1, s=None, bbox=[xmin - delx, xmax + delx])
         labelstring = 'Default spline fit'
         yout = fitpars(xout)
         yfit = fitpars(xvalues)
@@ -573,10 +601,10 @@ def apply_fitting_fields(plotgui):
             ylowerror = youterror * 0.
             yhigherror = youterror * 0.
     else:
-        xlowerror = xvalues * 0.
-        xhigherror = xvalues * 0.
-        ylowerror = yvalues * 0.
-        yhigherror = yvalues * 0.
+        xlowerror = xout * 0.
+        xhigherror = xout * 0.
+        ylowerror = yout * 0.
+        yhigherror = yout * 0.
     xmin = numpy.min(xout)
     xmax = numpy.max(xout)
     ymin = numpy.min(yfit)
@@ -593,7 +621,7 @@ def apply_fitting_fields(plotgui):
         plotgui.ydata[plotgui.nsets] = {'values': yout, 'lowerror': ylowerror,
                                         'higherror': yhigherror,
                                         'minimum': ymin, 'maximum': ymax,
-                                        'errors': False, 'legend': True}
+                                        'errors': True, 'legend': True}
     else:
         plotgui.xdata[plotgui.nsets] = {'values': yout, 'lowerror': ylowerror,
                                         'higherror': yhigherror,
