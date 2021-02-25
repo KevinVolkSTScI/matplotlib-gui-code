@@ -147,20 +147,16 @@ def make_menus(plotgui, parent):
     menu3.add_command(
         label='Toggle Equal Aspect',
         command=lambda: plot_flag_utilities.toggle_equal_aspect(plotgui))
-    menu3.add_separator()
-    menu3.add_command(label='Add a Label',
-                      command=lambda: object_utilities.set_label(plotgui))
-    menu3.add_command(label='Edit Labels',
-                      command=lambda: label_utilities.edit_labels(plotgui))
-    menu3.add_command(label='Clear All Labels',
-                      command=lambda: label_utilities.clear_labels(plotgui))
-    menu3.add_command(label='Set Font', command=lambda: set_font(plotgui))
     label3 = Tk.Label(parent, text="    ")
     label3.pack(side=Tk.LEFT, fill=Tk.X, expand=1)
     menubutton4 = Tk.Menubutton(parent, text="Plot Items")
     menubutton4.pack(side=Tk.LEFT, fill=Tk.X, expand=1)
     menu4 = Tk.Menu(menubutton4)
     menubutton4['menu'] = menu4
+    menu4.add_command(label='Set Font', command=lambda: set_font(plotgui))
+    menu4.add_separator()
+    menu4.add_command(label='Add a label',
+                      command=lambda: object_utilities.set_label(plotgui))
     menu4.add_command(label='Add a line',
                       command=lambda: object_utilities.add_line(plotgui))
     menu4.add_command(label='Add an ellipse',
@@ -170,6 +166,8 @@ def make_menus(plotgui, parent):
     menu4.add_command(label='Add a vector',
                       command=lambda: object_utilities.add_vector(plotgui))
     menu4.add_separator()
+    menu4.add_command(label='Edit labels',
+                      command=lambda: label_utilities.edit_labels(plotgui))
     menu4.add_command(label='Edit lines',
                       command=lambda: edit_objects.edit_lines(plotgui))
     menu4.add_command(label='Edit ellipses',
@@ -189,6 +187,8 @@ def make_menus(plotgui, parent):
     menu4.add_command(label='Remove last vector',
                       command=lambda: object_utilities.remove_vector(plotgui))
     menu4.add_separator()
+    menu4.add_command(label='Clear all labels',
+                      command=lambda: label_utilities.clear_labels(plotgui))
     menu4.add_command(
         label='Remove all lines',
         command=lambda: object_utilities.remove_all_lines(plotgui))
