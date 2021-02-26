@@ -50,38 +50,51 @@ def make_data_set_edit_window(plotgui):
     else:
         nset = plotgui.nsets
     if plotgui.data_entry_window is not None:
-        return
-    plotgui.data_entry_window = Tk.Toplevel()
-    plotgui.data_entry_window.title('Edit Data Set Values')
-    holder = Tk.Frame(plotgui.data_entry_window)
-    holder.pack(side=Tk.TOP)
-    holder.config(bg='black')
-    plotgui.data_text = ScrolledText(holder, height=40, width=80,
-                                     wrap=Tk.NONE, relief="solid")
-    plotgui.data_text.config(font=('courier', 16))
-    plotgui.data_text.pack(side=Tk.TOP, padx=10, pady=10)
-    str1 = ''
-    for loop in range(len(plotgui.xdata[nset-1]['values'])):
-        str1 = str1 + '%g %g %g %g %g %g\n' % (
-            plotgui.xdata[nset-1]['values'][loop],
-            plotgui.xdata[nset-1]['lowerror'][loop],
-            plotgui.xdata[nset-1]['higherror'][loop],
-            plotgui.ydata[nset-1]['values'][loop],
-            plotgui.ydata[nset-1]['lowerror'][loop],
-            plotgui.ydata[nset-1]['higherror'][loop]
-        )
-    plotgui.data_text.insert(1.0, str1)
-    bframe = Tk.Frame(plotgui.data_entry_window)
-    bframe.pack()
-    set_button = Tk.Button(
-        bframe, text="Apply",
-        command=lambda: apply_data_edits(plotgui, nset, plotgui.data_text))
-    set_button.pack(side=Tk.LEFT)
-    close_button = Tk.Button(
-        bframe, text="Close",
-        command=lambda: plotgui.close_data_window(
-            plotgui.data_entry_window))
-    close_button.pack(side=Tk.LEFT)
+        plotgui.data_entry_window.deiconify()
+        str1 = ''
+        for loop in range(len(plotgui.xdata[nset-1]['values'])):
+            str1 = str1 + '%g %g %g %g %g %g\n' % (
+                plotgui.xdata[nset-1]['values'][loop],
+                plotgui.xdata[nset-1]['lowerror'][loop],
+                plotgui.xdata[nset-1]['higherror'][loop],
+                plotgui.ydata[nset-1]['values'][loop],
+                plotgui.ydata[nset-1]['lowerror'][loop],
+                plotgui.ydata[nset-1]['higherror'][loop]
+            )
+        oldstr = plotgui.data_text.get()
+        plotgui.data_text.delete(1.0, len(oldstr))
+        plotgui.data_text.insert(1.0, str1)
+    else:
+        plotgui.data_entry_window = Tk.Toplevel()
+        plotgui.data_entry_window.title('Edit Data Set Values')
+        holder = Tk.Frame(plotgui.data_entry_window)
+        holder.pack(side=Tk.TOP)
+        holder.config(bg='black')
+        plotgui.data_text = ScrolledText(holder, height=40, width=80,
+                                         wrap=Tk.NONE, relief="solid")
+        plotgui.data_text.config(font=('courier', 16))
+        plotgui.data_text.pack(side=Tk.TOP, padx=10, pady=10)
+        str1 = ''
+        for loop in range(len(plotgui.xdata[nset-1]['values'])):
+            str1 = str1 + '%g %g %g %g %g %g\n' % (
+                plotgui.xdata[nset-1]['values'][loop],
+                plotgui.xdata[nset-1]['lowerror'][loop],
+                plotgui.xdata[nset-1]['higherror'][loop],
+                plotgui.ydata[nset-1]['values'][loop],
+                plotgui.ydata[nset-1]['lowerror'][loop],
+                plotgui.ydata[nset-1]['higherror'][loop] )
+        plotgui.data_text.insert(1.0, str1)
+        bframe = Tk.Frame(plotgui.data_entry_window)
+        bframe.pack()
+        set_button = Tk.Button(
+            bframe, text="Apply",
+            command=lambda: apply_data_edits(plotgui, nset, plotgui.data_text))
+        set_button.pack(side=Tk.LEFT)
+        close_button = Tk.Button(
+            bframe, text="Close",
+            command=lambda: plotgui.close_window(
+                plotgui.data_entry_window, 'data_entry_window'))
+        close_button.pack(side=Tk.LEFT)
 
 def apply_data_edits(plotgui, nset, data_text):
     """
@@ -193,7 +206,8 @@ def make_data_set_sort_window(plotgui):
     sort_button.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         frame2, text="Close",
-        command=lambda: plotgui.close_data_window(plotgui.data_set_sort_window))
+        command=lambda: plotgui.close_window(
+            plotgui.data_set_sort_window, 'data_set_sort_window'))
     close_button.pack(side=Tk.LEFT)
 
 def sort_set(plotgui):
@@ -388,8 +402,8 @@ def make_data_set_fitting_window(plotgui):
     set_button.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         frame2, text="Close",
-        command=lambda: plotgui.close_data_window(
-            plotgui.data_set_fitting_window))
+        command=lambda: plotgui.close_window(
+            plotgui.data_set_fitting_window, 'data_set_fitting_window'))
     close_button.pack(side=Tk.LEFT)
 
 def cancel_fitting_fields(plotgui, nsets):
@@ -746,8 +760,9 @@ def make_data_set_transformation_window(plotgui):
     apply_button.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         frame2, text="Close",
-        command=lambda: plotgui.close_data_window(
-            plotgui.data_set_transformation_window))
+        command=lambda: plotgui.close_window(
+            plotgui.data_set_transformation_window,
+            'data_set_transformation_window'))
     close_button.pack(side=Tk.LEFT)
 
 def apply_transformation(plotgui):
@@ -857,8 +872,8 @@ def make_data_set_delete_window(plotgui):
     apply_button.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         frame2, text="Close",
-        command=lambda: plotgui.close_data_window(
-            plotgui.data_set_delete_window))
+        command=lambda: plotgui.close_window(
+            plotgui.data_set_delete_window, 'data_set_delete_window'))
     close_button.pack(side=Tk.LEFT)
 
 def delete_set(plotgui):
@@ -1049,7 +1064,8 @@ def make_data_set_window(plotgui):
     label1.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         frame2, text="Close",
-        command=lambda: plotgui.close_data_window(plotgui.data_set_window))
+        command=lambda: plotgui.close_window(
+            plotgui.data_set_window, 'data_set_window'))
     close_button.pack(side=Tk.LEFT)
     if plotgui.nsets > 0:
         plotgui.set_property_fields(0)

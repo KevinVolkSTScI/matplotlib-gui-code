@@ -189,6 +189,7 @@ import data_set_operations
 import plot_flag_utilities
 import window_creation
 import plot_controls
+import non_linear_fitting
 
 # The following are "global" variables with line/marker information from
 # matplotlib.  These are used, but not changed, in the code in more than one
@@ -356,8 +357,8 @@ class PlotGUI(Tk.Frame):
         self.fontweight = ['normal', ]
         # The following are window names, set to None before and after the
         # window is active to avoid duplicate windows.
-        self.font_window = None
-        self.label_font_window = None
+#        self.font_window = None
+#        self.label_font_window = None
         self.read_window = None
         self.data_set_window = None
         self.data_entry_window = None
@@ -374,6 +375,7 @@ class PlotGUI(Tk.Frame):
         self.tile_window = None
         self.setplot_window = None
         self.hideplot_window = None
+        self.non_linear_set_fitting_window = None
         self.plot_margin = 0.
         self.plot_frame = [0., ]
         self.nxplots = 1
@@ -409,7 +411,7 @@ class PlotGUI(Tk.Frame):
         """
         menuframe = Tk.Frame(self.root)
         menuframe.pack(side=Tk.TOP, anchor=Tk.W)
-        self.make_menus(menuframe)
+        window_creation.make_menus(self, menuframe)
         controlframe = Tk.Frame(self.root)
         controlframe.pack(side=Tk.LEFT, fill=Tk.Y, expand=1)
         window_creation.make_controls(self, controlframe)
@@ -418,182 +420,6 @@ class PlotGUI(Tk.Frame):
         self.plotframe = Tk.Frame(self.root)
         self.plotframe.pack(side=Tk.LEFT, fill=Tk.Y, expand=1)
         window_creation.make_plot_area(self, self.plotframe)
-
-    def make_menus(self, parent):
-        """
-        Create pull-down menus for plot functionality.
-
-        Given a Tk Frame variable "parent" this routine makes a pull-down
-        menu area within this frame.
-
-        Parameters
-        ----------
-            parent     A Tk.Frame variable, that holds the menus
-
-        Returns
-        -------
-            No values are returned by the routine.
-
-        """
-        menubutton1 = Tk.Menubutton(parent, text="Data")
-        menubutton1.pack(side=Tk.LEFT, fill=Tk.X, expand=1)
-        menu1 = Tk.Menu(menubutton1)
-        menubutton1['menu'] = menu1
-        menu1.add_command(
-            label='Read Data',
-            command=lambda: window_creation.read_data_set(self))
-        menu1.add_command(
-            label='Create Values by Formula',
-            command=lambda: data_set_utilities.create_data_set(self))
-        menu1.add_command(
-            label='Create Values in Widget',
-            command=lambda: data_set_utilities.create_data_set_by_editor(self))
-        menu1.add_command(
-            label='Write Data',
-            command=lambda: data_set_utilities.write_data_sets(self))
-        menu1.add_separator()
-        menu1.add_command(label='Read FITS Image', command=self.read_image)
-        label1 = Tk.Label(parent, text="    ")
-        label1.pack(side=Tk.LEFT, fill=Tk.X, expand=1)
-        menubutton2 = Tk.Menubutton(parent, text="Sets")
-        menubutton2.pack(side=Tk.LEFT, fill=Tk.X, expand=1)
-        menu2 = Tk.Menu(menubutton2)
-        menubutton2['menu'] = menu2
-        menu2.add_command(
-            label='Set Properties',
-            command=lambda: data_set_operations.make_data_set_window(self))
-        menu2.add_command(
-            label='Fit Sets',
-            command=\
-            lambda: data_set_operations.make_data_set_fitting_window(self))
-        menu2.add_command(
-            label='Set Statistics',
-            command=lambda: data_set_utilities.set_statistics(self))
-        menu2.add_command(
-            label='Block Average',
-            command=lambda: data_set_utilities.block_average(self))
-        menu2.add_command(
-            label='Transform Set',
-            command=lambda:\
-            data_set_operations.make_data_set_transformation_window(self))
-        menu2.add_command(
-            label='Edit Set in Widget',
-            command=lambda: data_set_operations.make_data_set_edit_window(self))
-        menu2.add_command(
-            label='Sort Set',
-            command=lambda: \
-            data_set_operations.make_data_set_sort_window(self))
-        menu2.add_command(
-            label='Delete Set',
-            command=lambda:\
-            data_set_operations.make_data_set_delete_window(self))
-        label2 = Tk.Label(parent, text="    ")
-        label2.pack(side=Tk.LEFT, fill=Tk.X, expand=1)
-        menubutton3 = Tk.Menubutton(parent, text="Plot")
-        menubutton3.pack(side=Tk.LEFT, fill=Tk.X, expand=1)
-        menu3 = Tk.Menu(menubutton3)
-        menubutton3['menu'] = menu3
-        menu3.add_command(
-            label='Plot Parameters',
-            command=lambda: plot_controls.make_plot_control_window(self))
-        menu3.add_command(
-            label='Clear Plot',
-            command=lambda: plot_flag_utilities.clear_plot(self))
-        menu3.add_command(
-            label='Clear Current Plot',
-            command=lambda: plot_flag_utilities.clear_current_plot(self))
-        menu3.add_command(
-            label='Opposite Y Axis',
-            command=lambda: plot_flag_utilities.set_opposite_y(self))
-        menu3.add_command(
-            label='Opposite X Axis',
-            command=lambda: plot_flag_utilities.set_opposite_x(self))
-        menu3.add_command(
-            label='Tile Plots',
-            command=lambda: plot_flag_utilities.tile_plots(self))
-        menu3.add_command(
-            label='Set Plot',
-            command=lambda: plot_flag_utilities.set_plot_number(self))
-        menu3.add_command(
-            label='Hide/Show Plot',
-            command=lambda: plot_flag_utilities.set_plot_hide(self))
-        menu3.add_command(
-            label='Toggle Equal Aspect',
-            command=lambda: plot_flag_utilities.toggle_equal_aspect(self))
-        menu3.add_separator()
-        menu3.add_command(label='Add a Label',
-                          command=lambda: object_utilities.set_label(self))
-        menu3.add_command(label='Edit Labels',
-                          command=lambda: label_utilities.edit_labels(self))
-        menu3.add_command(label='Clear All Labels',
-                          command=lambda: label_utilities.clear_labels(self))
-        menu3.add_command(
-            label='Set Font',
-            command=lambda: window_creation.set_font(self))
-        label3 = Tk.Label(parent, text="    ")
-        label3.pack(side=Tk.LEFT, fill=Tk.X, expand=1)
-        menubutton4 = Tk.Menubutton(parent, text="Plot Items")
-        menubutton4.pack(side=Tk.LEFT, fill=Tk.X, expand=1)
-        menu4 = Tk.Menu(menubutton4)
-        menubutton4['menu'] = menu4
-        menu4.add_command(label='Add a line',
-                          command=lambda: object_utilities.add_line(self))
-        menu4.add_command(label='Add an ellipse',
-                          command=lambda: object_utilities.add_ellipse(self))
-        menu4.add_command(label='Add a box',
-                          command=lambda: object_utilities.add_box(self))
-        menu4.add_command(label='Add a vector',
-                          command=lambda: object_utilities.add_vector(self))
-        menu4.add_separator()
-        menu4.add_command(label='Edit lines',
-                          command=lambda: edit_objects.edit_lines(self))
-        menu4.add_command(label='Edit ellipses',
-                          command=lambda: edit_objects.edit_ellipses(self))
-        menu4.add_command(label='Edit boxes',
-                          command=lambda: edit_objects.edit_boxes(self))
-        menu4.add_command(label='Edit vectors',
-                          command=lambda: edit_objects.edit_vectors(self))
-        menu4.add_separator()
-        menu4.add_command(label='Remove last line',
-                          command=lambda: object_utilities.remove_line(self))
-        menu4.add_command(
-            label='Remove last ellipse',
-            command=lambda: object_utilities.remove_ellipse(self))
-        menu4.add_command(label='Remove last box',
-                          command=lambda: object_utilities.remove_box(self))
-        menu4.add_command(label='Remove last vector',
-                          command=lambda: object_utilities.remove_vector(self))
-        menu4.add_separator()
-        menu4.add_command(
-            label='Remove all lines',
-            command=lambda: object_utilities.remove_all_lines(self))
-        menu4.add_command(
-            label='Remove all ellipses',
-            command=lambda: object_utilities.remove_all_ellipses(self))
-        menu4.add_command(
-            label='Remove all boxes',
-            command=lambda: object_utilities.remove_all_boxes(self))
-        menu4.add_command(
-            label='Remove all vectors',
-            command=lambda: object_utilities.remove_all_vectors(self))
-        label4 = Tk.Label(parent, text="    ")
-        label4.pack(side=Tk.LEFT, fill=Tk.X, expand=1)
-        menubutton5 = Tk.Menubutton(parent, text="Save/Restore Plot")
-        menubutton5.pack(side=Tk.LEFT, fill=Tk.X, expand=1)
-        menu5 = Tk.Menu(menubutton5)
-        menubutton5['menu'] = menu5
-        menu5.add_command(
-            label='Save configuration',
-            command=lambda: save_and_restore_plot.save_plot(self))
-        menu5.add_command(
-            label='Read configuration',
-            command=lambda: save_and_restore_plot.load_plot(self))
-        menu5.add_command(
-            label='Save as PNG',
-            command=lambda: general_utilities.save_png_figure(self.figure))
-        menu5.add_command(
-            label='Save as postscript',
-            command=lambda: general_utilities.save_ps_figure(self.figure))
 
     def show_plot(self):
         """
@@ -1001,7 +827,7 @@ class PlotGUI(Tk.Frame):
         except (ValueError, TypeError):
             pass
 
-    def close_window(self, windowname):
+    def close_window(self, windowname, label, clear_data_input=False):
         """
         Close a window and set the associated variable to None.
 
@@ -1010,8 +836,13 @@ class PlotGUI(Tk.Frame):
 
         Parameters
         ----------
-            windowname :  A Tk.Toplevel variable for an existing window
-                          that is to be closed.
+           windowname :  A Tk.Toplevel variable for an existing window
+                         that is to be closed.
+
+           label :  A string identifying which window is being closed
+
+           clear_data_input :   A boolean flag for whether the datavalues 
+                                variable needs to be cleared.
 
         Returns
         -------
@@ -1019,74 +850,42 @@ class PlotGUI(Tk.Frame):
 
         """
         windowname.destroy()
-        # One needs to set the window name to None to signal that a new
-        # window of this type can be opened.  For some reason one cannot
-        # just set windowname to None here.  If one does, it has no affect
-        # on the object variable that is passed into the routine.
-        if self.read_window == windowname:
-            self.read_window = None
-        if self.data_set_window == windowname:
-            self.data_set_window = None
-        if self.data_set_transformation_window == windowname:
-            self.data_set_transformation_window = None
-        if self.plot_control_window == windowname:
-            self.plot_control_window = None
-        if self.plot_control_window == windowname:
-            self.plot_control_window = None
-        if self.box_window == windowname:
-            self.box_window = None
-        if self.vector_window == windowname:
-            self.vector_window = None
-        if self.ellipse_window == windowname:
-            self.ellipse_window = None
-        if self.line_window == windowname:
-            self.line_window = None
-        if self.setplot_window == windowname:
-            self.setplot_window = None
-        if self.tile_window == windowname:
-            self.tile_window = None
-        if self.hideplot_window == windowname:
-            self.hideplot_window = None
+        windowname.update()
         windowname = None
-
-    def close_data_window(self, windowname):
-        """
-        Remove a data window and set the associated variables to None.
-
-        This routine removes a window from the system and replaces the
-        old window variable with None to mark that the window is not active.
-        This version also sets the self.datavaulues variable to None, so it
-        specific to the data set read window.
-
-        Parameters
-        ----------
-            windowname :  A Tk.Toplevel variable for an existing window
-                          that is to be closed.
-
-        Returns
-        -------
-            No value is returned by this routine.
-
-        """
-        self.datavalues = None
-        windowname.destroy()
-        # One needs to set the window name to None to signal that a new
-        # window of this type can be opened.  For some reason one cannot
-        # just set windowname to None here.  If one does, it has no affect
-        # on the object variable that is passed into the routine.
-        if self.read_window == windowname:
+        if clear_data_input:
+            self.datavalues = None
+        # It is not clear why this cannot be put in a loop, but when it is
+        # attempted the variables are not set to None.
+        if label == 'read_window':
             self.read_window = None
-        if self.data_set_window == windowname:
+        if label == 'data_set_window':
             self.data_set_window = None
-        if self.data_set_transformation_window == windowname:
+        if label == 'data_set_transformation_window':
             self.data_set_transformation_window = None
-        if self.data_set_fitting_window == windowname:
-            self.data_set_fitting_window = None
-        if self.data_set_delete_window == windowname:
+        if label == 'data_set_delete_window':
             self.data_set_delete_window = None
-        if self.data_entry_window == windowname:
+        if label == 'data_entry_window':
             self.data_entry_window = None
-        windowname = None
+        if label == 'data_set_sort_window':
+            self.data_set_sort_window = None
+        if label == 'data_set_fitting_window':
+            self.data_set_fitting_window = None
+        if label == 'plot_control_window':
+            self.plot_control_window = None
+        if label == 'box_window':
+            self.box_window = None
+        if label == 'vector_window':
+            self.vector_window = None
+        if label == 'ellipse_window':
+            self.ellipse_window = None
+        if label == 'line_window':
+            self.line_window = None
+        if label == 'setplot_window':
+            self.setplot_window = None
+        if label == 'hideplot_window':
+            self.hideplot_window = None
+        if label == 'non_linear_set_fitting_window':
+            self.non_linear_set_fitting_window = None
 
     def error_fields(self, event):
         """

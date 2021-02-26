@@ -188,7 +188,8 @@ def set_plot_number(plotgui):
     apply_button.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         buttonframe, text="Close",
-        command=lambda: plotgui.close_window(plotgui.setplot_window))
+        command=lambda: plotgui.close_window(plotgui.setplot_window,
+                                             'setplot_window'))
     close_button.pack(side=Tk.LEFT)
 
 def set_plot_hide(plotgui):
@@ -228,7 +229,8 @@ def set_plot_hide(plotgui):
     apply_button.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         buttonframe, text="Close",
-        command=lambda: plotgui.close_window(plotgui.hideplot_window))
+        command=lambda: plotgui.close_window(plotgui.hideplot_window, 
+                                             'hideplot_window'))
     close_button.pack(side=Tk.LEFT)
 
 def tile_plots(plotgui):
@@ -279,7 +281,8 @@ def tile_plots(plotgui):
     label1.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         buttonframe, text="Close",
-        command=lambda: plotgui.close_window(plotgui.tile_window))
+        command=lambda: plotgui.close_window(plotgui.tile_window, 
+                                             'tile_window'))
     close_button.pack(side=Tk.LEFT)
 
 def set_current_plot(plotgui):

@@ -6,13 +6,16 @@ import matplotlib
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import data_set_utilities
+import data_set_operations
 import general_utilities
 import edit_objects
 import make_plot
 import label_utilities
 import object_utilities
 import plot_flag_utilities
+import plot_controls
 import histogram_utilities
+import non_linear_fitting
 
 def make_widget(plotgui):
     """
@@ -98,6 +101,10 @@ def make_menus(plotgui, parent):
         command=\
         lambda: data_set_operations.make_data_set_fitting_window(plotgui))
     menu2.add_command(
+        label='Non-linear Fitting',
+        command=\
+        lambda: non_linear_fitting.make_fitting_window(plotgui))
+    menu2.add_command(
         label='Set Statistics',
         command=lambda: data_set_utilities.set_statistics(plotgui))
     menu2.add_command(
@@ -122,7 +129,7 @@ def make_menus(plotgui, parent):
     menu3 = Tk.Menu(menubutton3)
     menubutton3['menu'] = menu3
     menu3.add_command(label='Plot Parameters',
-                      command=plotgui.make_plot_control_window)
+                      command=plot_controls.make_plot_control_window)
     menu3.add_command(
         label='Clear Plot',
         command=lambda: plot_flag_utilities.clear_plot(plotgui))
@@ -777,7 +784,8 @@ def read_data_set(plotgui):
     label2.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         field4, text="Cancel/Close",
-        command=lambda: plotgui.close_window(plotgui.read_window))
+        command=lambda: plotgui.close_window(plotgui.read_window,
+                                             'read_window', True))
     close_button.pack(side=Tk.LEFT)
 
 def select_file_window(plotgui):
