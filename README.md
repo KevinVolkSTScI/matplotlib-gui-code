@@ -11,7 +11,7 @@ variable is set properly (the author does not use Microsoft Windows and so does
 not know what the equivalent is in such computers).  The code uses matplotlib
 and tkinter as well as other standard Python packages.
 
-## Note: MacOS 10.14 Mojave Issue With Python version 3.7
+** Note: MacOS 10.14 Mojave Issue With Python version 3.7
 
 The code here uses the Tkinter package that is part of the standard Python 
 distribution.  In the MacOS version 10.14 (Majave) there is an issue that
@@ -22,7 +22,7 @@ version as far as the author is aware.    There is no solution for this issue
 within Python.  Hence, do not use this code with that particular combination
 of MacOS 10.14 and Python 3.7.
 
-## Installation and Set-Up
+** Installation and Set-Up
 
 To install the code one needs to copy the repository to some directory, which
 will be called /your/path/to/the/files/ in the documentation.  Substitute the
@@ -32,13 +32,13 @@ in a new directory.
 When the code is unpacked in the target directory you should see the following
 files in the directory:
 
-LICENSE  
-README.md  
-matplotlib_driver_code_documentation.docx  
-matplotlib_driver_code_documentation.pdf  
-setup.py  
-src  
-tests  
+LICENSE
+README.md
+matplotlib_driver_code_documentation.docx
+matplotlib_driver_code_documentation.pdf
+setup.py
+src
+tests
 
 The tests directory is a placeholder and is currently empty.  The code itself
 is in the src directory.
@@ -47,7 +47,7 @@ To install the package run the normal command
 
 python setup.py install
 
-in the target directory /your/path/to/the/files.  This will add build and dist
+in the target directory /your /path/to/the/files.  This will add build and dist
 directories.  Do not issue this command in the src directory, it must be done
 in the upper level directory.
 
@@ -63,13 +63,13 @@ export PATH='/your/path/to/the/files:$PATH'
 
 in bash.  This assumes that the $PATH variable is already defined.
 
-## Starting the code
+** Starting the code
 
 Assuming that the installation worked as expected, one can then import
 the plot interface and start it via Python commands such as
 
-\>\>\> import matplotlib_user_interface as mui  
-\>\>\> root, myplot = mui.startup()
+>>> import matplotlib_user_interface as mui
+>>> root, myplot = mui.startup()
 
 This will cause a new window to open with the interface controls.  See the
 main documentation in the matplotlib_driver_code_documentation.pdf or
@@ -78,7 +78,7 @@ using the interface and adding data sets from the Python interpreter.  The
 "myplot" variable is an object that runs the interface.  The "root" variable
 is a Tkinter variable for the plot window.
 
-## Use of the code
+** Use of the code
 
 The code assumes that one will want to read in data values, possibly with
 associated uncertainties, from an ascii file.  One can have one or more "sets"
@@ -89,18 +89,18 @@ the code was started that way.  The latter process is to do the following,
 once root and myplot are created as noted above.  First create the x and y
 values in Python as one-dimensional numpy arrays, for example
 
-\>\>\> import numpy  
-\>\>\> xvalues = numpy.arange(0, 100, 1)  
-\>\>\> yvalues = numpy.sqrt(xvalues)
+>>> import numpy
+>>> xvalues = numpy.arange(0, 100, 1)
+>>> yvalues = numpy.sqrt(xvalues)
 
 Once the x and y values are defined in the interpreter, one can load them into
 the plot object
 
-\>\>\> myplot.add_set(xvalues, yvalues)  
+>>> myplot.add_set(xvalues, yvalues)
 
 and then tell the code to replot the plot(s) associated with the myplot object
 
-\>\>\> mui.make_plot.make_plot(myplot)  
+>>> mui.make_plot.make_plot(myplot)
 
 One can add multiple sets to the interface by making additional calls to
 the add_set method of the object.
