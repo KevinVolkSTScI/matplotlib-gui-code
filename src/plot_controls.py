@@ -359,7 +359,8 @@ def make_plot_control_window(plotgui):
     label1.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         field1, text="Close",
-        command=lambda: plotgui.close_window(plotgui.plot_control_window))
+        command=lambda: plotgui.close_window(plotgui.plot_control_window, 
+                                             'plot_control_window'))
     close_button.pack(side=Tk.LEFT)
 
 def apply_plot_parameters_all(plotgui):

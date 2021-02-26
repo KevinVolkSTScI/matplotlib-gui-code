@@ -295,8 +295,8 @@ def create_data_set_by_editor(plotgui):
     set_button.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         bframe, text="Close",
-        command=lambda: plotgui.close_data_window(
-            plotgui.data_entry_window))
+        command=lambda: plotgui.close_window(
+            plotgui.data_entry_window, 'data_entry_window'))
     close_button.pack(side=Tk.LEFT)
 
 def apply_data_input(plotgui):

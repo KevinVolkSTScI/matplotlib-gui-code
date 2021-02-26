@@ -540,7 +540,8 @@ def add_box_values(plotgui):
     label1.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         frame2, text="Close Window",
-        command=lambda: plotgui.close_window(plotgui.box_window))
+        command=lambda: plotgui.close_window(plotgui.box_window, 
+                                             'box_window'))
     close_button.pack(side=Tk.LEFT)
 
 def apply_line_values(plotgui):
@@ -589,7 +590,7 @@ def apply_line_values(plotgui):
         plotgui.plot_lines[plotgui.number_of_lines]['plot'] = plotgui.current_plot
         plotgui.number_of_lines = plotgui.number_of_lines + 1
         make_plot.make_plot(plotgui)
-        plotgui.close_data_window(plotgui.line_window)
+        plotgui.close_window(plotgui.line_window, 'line_window')
     except Exception:
         return
 
@@ -657,7 +658,7 @@ def apply_vector_values(plotgui):
                 plotgui.colourset[colour_index]
         plotgui.number_of_vectors = plotgui.number_of_vectors + 1
         make_plot.make_plot(plotgui)
-        plotgui.close_data_window(plotgui.vector_window)
+        plotgui.close_window(plotgui.vector_window, 'vector_window')
     except Exception:
         return
 
@@ -713,7 +714,7 @@ def apply_box_values(plotgui):
             plotgui.altcolourset[colour_index2]
         plotgui.number_of_boxes = plotgui.number_of_boxes + 1
         make_plot.make_plot(plotgui)
-        plotgui.close_window(plotgui.box_window)
+        plotgui.close_window(plotgui.box_window, 'box_window')
     except Exception:
         return
 
@@ -826,7 +827,8 @@ def add_ellipse_values(plotgui):
     label1.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         frame2, text="Close Window",
-        command=lambda: plotgui.close_window(plotgui.ellipse_window))
+        command=lambda: plotgui.close_window(plotgui.ellipse_window, 
+                                             'ellipse_window'))
     close_button.pack(side=Tk.LEFT)
 
 def apply_ellipse_values(plotgui):
@@ -882,7 +884,8 @@ def apply_ellipse_values(plotgui):
             plotgui.altcolourset[colour_index2]
         plotgui.number_of_ellipses = plotgui.number_of_ellipses + 1
         make_plot.make_plot(plotgui)
-        plotgui.close_window(plotgui.ellipse_window)
+        plotgui.close_window(plotgui.ellipse_window,
+                             'ellipse_window')
     except Exception:
         return
 
@@ -978,7 +981,8 @@ def add_line_values(plotgui):
     label1.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         frame2, text="Close",
-        command=lambda: plotgui.close_window(plotgui.line_window))
+        command=lambda: plotgui.close_window(plotgui.line_window,
+                                             'line_window'))
     close_button.pack(side=Tk.LEFT)
 
 def add_vector_values(plotgui):
@@ -1100,6 +1104,7 @@ def add_vector_values(plotgui):
     label1.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         frame2, text="Close",
-        command=lambda: plotgui.close_window(plotgui.vector_window))
+        command=lambda: plotgui.close_window(plotgui.vector_window, 
+                                             'vector_window'))
     close_button.pack(side=Tk.LEFT)
 
