@@ -3,6 +3,7 @@ import tkinter as Tk
 import tkinter.messagebox
 import make_plot
 import window_creation
+import object_utilities
 
 def toggle_equal_aspect(plotgui):
     """
