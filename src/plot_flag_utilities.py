@@ -2,6 +2,7 @@ import numpy
 import tkinter as Tk
 import tkinter.messagebox
 import make_plot
+import window_creation
 
 def toggle_equal_aspect(plotgui):
     """
@@ -275,7 +276,7 @@ def tile_plots(plotgui):
     buttonframe = Tk.Frame(plotgui.tile_window)
     buttonframe.pack(side=Tk.TOP)
     apply_button = Tk.Button(buttonframe, text="Apply Values",
-                             command=plotgui.set_plot_layout)
+                             command=window_creation.set_plot_layout)
     apply_button.pack(side=Tk.LEFT)
     label1 = Tk.Label(buttonframe, text="     ")
     label1.pack(side=Tk.LEFT)
