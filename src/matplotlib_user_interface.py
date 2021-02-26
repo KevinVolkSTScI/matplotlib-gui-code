@@ -884,6 +884,8 @@ class PlotGUI(Tk.Frame):
             self.setplot_window = None
         if label == 'hideplot_window':
             self.hideplot_window = None
+        if label == 'tile_window':
+            self.tile_window = None
         if label == 'non_linear_set_fitting_window':
             self.non_linear_set_fitting_window = None
 
