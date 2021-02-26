@@ -4,19 +4,87 @@ import make_plot
 #import mpfit
 #import mpfitexpr.py
 
-def process_state(tkvars):
-    flag = tkvars[1].get()
-    if flag == 1:
-        tkvars[3].config(state='normal')
-        tkvars[4].config(state='normal')
-    else:
-        tkvars[3].config(state='disabled')
-        tkvars[4].config(state='disabled')
+def activate_parameter(tkvars):
+    """
+    Process changes of state in the parameter selection
 
-def fitting_parameter_group(outerframe, n):
+    Parameters
+    ----------
+
+    tkvars:  a list of tkinter variables for Entry and control of parameters 
+             in the non-linear fitting
+
+    Returns
+    -------
+
+    None
+    """
+    flag = tkvars[0].get()
+    if flag:
+        tkvars[2].config(state='normal')
+    else:
+        tkvars[2].config(state='disabled')
+
+def process_state(tkvars):
+    """
+    Process changes of state in the selection Checkbuttons
+
+    Parameters
+    ----------
+
+    tkvars:  a list of tkinter variables for Entry and control of parameters 
+             in the non-linear fitting
+
+    Returns
+    -------
+
+    None
+    """
+    flag = tkvars[3].get()
+    if flag:
+        tkvars[5].config(state='normal')
+        tkvars[6].config(state='normal')
+    else:
+        tkvars[5].config(state='disabled')
+        tkvars[6].config(state='disabled')
+
+def fitting_parameter_group(outerframe, n, active):
+    """
+    Set a group of tkinter items for one non-linear fitting parameter.
+
+    Parameters
+    ----------
+
+    outframe:  A tkinter frame variable that holds the set of widget items
+
+    n:    An integer value for the parameter number (used in the labels)
+
+    active:  A boolean value for whether the parameter is active or not
+
+    Returns
+    -------
+
+    tkvars:  A list of tkinter variables
+
+    Values in tkvars --
+
+        0    parameter active IntVar
+        1    parameter active Checkbutton
+        2    parameter Entry field
+        3    range active IntVar
+        4    range active Checkbutton
+        5    range minimum Entry field
+        6    range maximum Entry field
+    """
     tkvars=[]
     holder = Tk.Frame(outerframe)
     holder.pack(side=Tk.TOP)
+    var1 = Tk.IntVar()
+    tkvars.append(var1)
+    control1 = Tk.Checkbutton(holder, variable=var1,
+                              command=lambda: activate_parameter(tkvars))
+    control1.pack(side=Tk.LEFT)
+    tkvars.append(control1)
     str1 = 'Parameter %2d:' % n
     label = Tk.Label(holder, text=str1)
     label.pack(side=Tk.LEFT)
@@ -24,15 +92,20 @@ def fitting_parameter_group(outerframe, n):
     entry1.pack(side=Tk.LEFT)
     entry1.insert(0, '1.0')
     tkvars.append(entry1)
+    if active:
+        var1.set(1)
+    else:
+        var1.set(0)
+        entry1.config(state='disabled')
     label = Tk.Label(holder, text='Bounds:')
     label.pack(side=Tk.LEFT)
-    var1 = Tk.IntVar()
-    tkvars.append(var1)
-    control1 = Tk.Checkbutton(holder, variable=var1,
-                           command=lambda: process_state(tkvars))
-    control1.pack(side=Tk.LEFT)
-    tkvars.append(control1)
-    var1.set(0)
+    var2 = Tk.IntVar()
+    tkvars.append(var2)
+    control2 = Tk.Checkbutton(holder, variable=var2,
+                              command=lambda: process_state(tkvars))
+    control2.pack(side=Tk.LEFT)
+    tkvars.append(control2)
+    var2.set(0)
     label = Tk.Label(holder, text='Minimum')
     label.pack(side=Tk.LEFT)
     entry2 = Tk.Entry(holder, width=15, state='disabled')
@@ -84,7 +157,11 @@ def make_fitting_window(plotgui):
     label1.pack(side=Tk.TOP)
     plotgui.tkcontrol = []
     for loop in range(10):
-        tkvals = fitting_parameter_group(holder, loop+1)
+        if loop < 2:
+            active = True
+        else:
+            active = False
+        tkvals = fitting_parameter_group(holder, loop+1, active)
         plotgui.tkcontrol.append(tkvals)
     h1 = Tk.Frame(holder)
     h1.pack(side=Tk.TOP)
