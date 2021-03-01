@@ -129,7 +129,7 @@ def make_menus(plotgui, parent):
     menu3 = Tk.Menu(menubutton3)
     menubutton3['menu'] = menu3
     menu3.add_command(label='Plot Parameters',
-                      command=plot_controls.make_plot_control_window)
+        command=lambda: plot_controls.make_plot_control_window(plotgui))
     menu3.add_command(
         label='Clear Plot',
         command=lambda: plot_flag_utilities.clear_plot(plotgui))
