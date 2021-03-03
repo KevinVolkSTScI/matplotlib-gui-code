@@ -681,12 +681,12 @@ def separator_line(parent, w1, h1, pad, flag, packvalue=Tk.TOP,
     For a vertical line normally the height will be much larger than the
     width, as in
 
-    sl = self.separator_line(frame, 10, 300, 5, False)
+    sl = separator_line(frame, 10, 300, 5, False)
 
     while for a horizontal line normally the width will be much larger
     than the height as in
 
-    sl = self.separator_line(frame, 500, 5, 5, True)
+    sl = separator_line(frame, 500, 5, 5, True)
 
     """
     lincanvas = Tk.Canvas(parent, height=h1, width=w1)
