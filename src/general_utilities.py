@@ -539,7 +539,7 @@ def round_float(plotgui, value, minimum_flag):
 
     Parmeters
     ---------
-        plotgui : 
+        plotgui :       A matplotlib_user_interface object
 
         value :         A floating point number to be rounded off
 
@@ -553,7 +553,7 @@ def round_float(plotgui, value, minimum_flag):
     -------
        rounded_value :    The rounded off floating point number calculated
                           from `value', or the input value in the case
-                          where the self.matplotlib_routine flag is True.
+                          where the plotgui.matplotlib_routine flag is True.
 
     The code differs from use of the floor and ceil functions in that
     it tries to round to the nearest significant figure for a given
