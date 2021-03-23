@@ -15,6 +15,7 @@ import object_utilities
 import plot_flag_utilities
 import plot_controls
 import histogram_utilities
+import save_and_restore_plot
 import non_linear_fitting
 
 def make_widget(plotgui):
