@@ -2,6 +2,7 @@ import math
 import sys
 import os
 import bisect
+from copy import deepcopy
 import tkinter as Tk
 import tkinter.ttk
 import tkinter.filedialog

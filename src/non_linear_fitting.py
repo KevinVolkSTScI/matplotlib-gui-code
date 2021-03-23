@@ -171,7 +171,9 @@ def make_fitting_window(plotgui):
     tolerance_entry.pack(side=Tk.LEFT)
     tolerance_entry.insert(0, '0.01')
     plotgui.tkcontrol.append(tolerance_entry)
-    label3 = Tk.Label(holder, text='Function (use A1...A10 for the parameters)')
+    str1 = 'Function (use p[0]...p[9] for the parameters, and x)\n' + \
+           'Use e.g. numpy.sin(p[0]*x) for numpy functions.'
+    label3 = Tk.Label(holder, text=str1)
     label3.pack(side=Tk.TOP)
     function_entry = Tk.Entry(holder, width=60)
     function_entry.pack(side=Tk.TOP)
@@ -191,4 +193,29 @@ def make_fitting_window(plotgui):
     close_button.pack(side=Tk.LEFT)
 
 def run_fitting(plotgui):
-    print(len(plotgui.tkcontrol))
+    function_string = plotgui.tkcontrol[-1].get()
+    tolerance = float(plotgui.tkcontrol[-2].get())
+    if (tolerance > 0.1) or (tolerance <= 0.):
+        tolerance = 0.01
+    # It is not clear that the tolerance will be used....if not will take it
+    # out later.
+    params = []
+    start = []
+    lowbound = []
+    highbound = []
+    for loop in range(10):
+        if plotgui.tkcontrol[loop][0]:
+            params.append(True)
+            start.append(float(plotgui.tkcontrol[loop][2].get()))
+            if plotgui.tkcontrol[loop][3]:
+                lowbound.append(float(plotgui.rkcontrol[loop][5].get()))
+                highbound.append(float(plotgui.rkcontrol[loop][6].get()))
+            else:
+                lowbound.append(0.)
+                highbound.append(0.)
+        else:
+            params.append(False)
+            start.append(0.)
+            lowbound.append(0.)
+            highbound.append(0.)
+    
