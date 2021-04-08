@@ -1,8 +1,10 @@
+import math
 import numpy
 import tkinter as Tk
+from tkinter.scrolledtext import ScrolledText
 import make_plot
-#import mpfit
-#import mpfitexpr.py
+import mpfit
+import mpfitexpr
 
 def activate_parameter(tkvars):
     """
@@ -43,10 +45,13 @@ def process_state(tkvars):
     flag = tkvars[3].get()
     if flag:
         tkvars[5].config(state='normal')
-        tkvars[6].config(state='normal')
     else:
         tkvars[5].config(state='disabled')
-        tkvars[6].config(state='disabled')
+    flag = tkvars[6].get()
+    if flag:
+        tkvars[8].config(state='normal')
+    else:
+        tkvars[8].config(state='disabled')
 
 def fitting_parameter_group(outerframe, n, active):
     """
@@ -71,10 +76,14 @@ def fitting_parameter_group(outerframe, n, active):
         0    parameter active IntVar
         1    parameter active Checkbutton
         2    parameter Entry field
-        3    range active IntVar
-        4    range active Checkbutton
+        3    minimum range active IntVar
+        4    minimum range active Checkbutton
         5    range minimum Entry field
-        6    range maximum Entry field
+        6    maximum range active IntVar
+        7    maximum range active Checkbutton
+        8    range maximum Entry field
+        9    fixed IntVar
+       10    fixed Checkbutton
     """
     tkvars=[]
     holder = Tk.Frame(outerframe)
@@ -88,7 +97,7 @@ def fitting_parameter_group(outerframe, n, active):
     str1 = 'Parameter %2d:' % n
     label = Tk.Label(holder, text=str1)
     label.pack(side=Tk.LEFT)
-    entry1 = Tk.Entry(holder, width=15)
+    entry1 = Tk.Entry(holder, width=10)
     entry1.pack(side=Tk.LEFT)
     entry1.insert(0, '1.0')
     tkvars.append(entry1)
@@ -108,16 +117,32 @@ def fitting_parameter_group(outerframe, n, active):
     var2.set(0)
     label = Tk.Label(holder, text='Minimum')
     label.pack(side=Tk.LEFT)
-    entry2 = Tk.Entry(holder, width=15, state='disabled')
+    entry2 = Tk.Entry(holder, width=10)
     entry2.pack(side=Tk.LEFT)
     entry2.insert(0, '1.0')
+    entry2.config(state='disabled')
     tkvars.append(entry2)
+    var3 = Tk.IntVar()
+    tkvars.append(var3)
+    control3 = Tk.Checkbutton(holder, variable=var3,
+                              command=lambda: process_state(tkvars))
+    control3.pack(side=Tk.LEFT)
+    tkvars.append(control3)
+    var3.set(0)
     label = Tk.Label(holder, text='Maximum')
     label.pack(side=Tk.LEFT)
-    entry3 = Tk.Entry(holder, width=15, state='disabled')
+    entry3 = Tk.Entry(holder, width=10)
     entry3.pack(side=Tk.LEFT)
     entry3.insert(0, '1.0')
+    entry3.config(state='disabled')
     tkvars.append(entry3)
+    label = Tk.Label(holder, text='Fixed')
+    label.pack(side=Tk.LEFT)
+    var4 = Tk.IntVar()
+    tkvars.append(var4)
+    control4 = Tk.Checkbutton(holder, variable=var4)
+    control4.pack(side=Tk.LEFT)
+    tkvars.append(control4)
     return tkvars
 
 def make_fitting_window(plotgui):
@@ -155,6 +180,11 @@ def make_fitting_window(plotgui):
     holder.pack(side=Tk.TOP)
     label1 = Tk.Label(holder, text='Levenberg-Marquardt Least Squares Fitting')
     label1.pack(side=Tk.TOP)
+    plotgui.non_linear_set_fitting_text_field = ScrolledText(
+        holder,height=20, width=80, wrap=Tk.NONE, relief='solid')
+    plotgui.non_linear_set_fitting_text_field.config(font=('courier', 16))
+    plotgui.non_linear_set_fitting_text_field.pack(side=Tk.TOP, padx=10,
+                                                   pady=10)
     plotgui.tkcontrol = []
     for loop in range(10):
         if loop < 2:
@@ -169,13 +199,19 @@ def make_fitting_window(plotgui):
     label2.pack(side=Tk.LEFT)
     tolerance_entry = Tk.Entry(h1, width=15)
     tolerance_entry.pack(side=Tk.LEFT)
-    tolerance_entry.insert(0, '0.01')
+    tolerance_entry.insert(0, '1.0e-10')
     plotgui.tkcontrol.append(tolerance_entry)
-    str1 = 'Function (use p[0]...p[9] for the parameters, and x)\n' + \
-           'Use e.g. numpy.sin(p[0]*x) for numpy functions.'
-    label3 = Tk.Label(holder, text=str1)
-    label3.pack(side=Tk.TOP)
-    function_entry = Tk.Entry(holder, width=60)
+    label3 = Tk.Label(h1, text='Set to Fit:')
+    label3.pack(side=Tk.LEFT)
+    set_entry = Tk.Entry(h1, width=5)
+    set_entry.pack(side=Tk.LEFT)
+    set_entry.insert(0, '1')
+    plotgui.tkcontrol.append(set_entry)
+    str1 = 'Function (use p[0]...p[9] for the parameters, and x for the input values)\n' + \
+           'Use full names, e.g. numpy.sin(p[0]*x), for numpy functions.'
+    label4 = Tk.Label(holder, text=str1, anchor='e')
+    label4.pack(side=Tk.TOP)
+    function_entry = Tk.Entry(holder, width=80)
     function_entry.pack(side=Tk.TOP)
     plotgui.tkcontrol.append(function_entry)
     bframe = Tk.Frame(holder)
@@ -194,28 +230,126 @@ def make_fitting_window(plotgui):
 
 def run_fitting(plotgui):
     function_string = plotgui.tkcontrol[-1].get()
-    tolerance = float(plotgui.tkcontrol[-2].get())
+    try:
+        tolerance = float(plotgui.tkcontrol[-3].get())
+        if (tolerance <= 0.) or (tolerance > 0.0001):
+            tolerance = 1.e-10
+    except:
+        tolerance = 1.e-10
+    nset = int(plotgui.tkcontrol[-2].get())
+    if (nset < 0) or (nset > plotgui.nsets):
+        nset = 1
     if (tolerance > 0.1) or (tolerance <= 0.):
         tolerance = 0.01
-    # It is not clear that the tolerance will be used....if not will take it
-    # out later.
     params = []
     start = []
     lowbound = []
     highbound = []
+    fixed = []
+    lowflag = []
+    highflag = []
     for loop in range(10):
-        if plotgui.tkcontrol[loop][0]:
+        if plotgui.tkcontrol[loop][0].get():
             params.append(True)
             start.append(float(plotgui.tkcontrol[loop][2].get()))
-            if plotgui.tkcontrol[loop][3]:
-                lowbound.append(float(plotgui.rkcontrol[loop][5].get()))
-                highbound.append(float(plotgui.rkcontrol[loop][6].get()))
+            if plotgui.tkcontrol[loop][3].get():
+                lowbound.append(float(plotgui.tkcontrol[loop][5].get()))
+                lowflag.append(True)
             else:
                 lowbound.append(0.)
+                lowflag.append(False)
+            if plotgui.tkcontrol[loop][6].get():
+                highbound.append(float(plotgui.tkcontrol[loop][8].get()))
+                highflag.append(True)
+            else:
                 highbound.append(0.)
+                highflag.append(False)
+            if plotgui.tkcontrol[loop][9].get():
+                fixed.append(True)
+            else:
+                fixed.append(False)
         else:
             params.append(False)
             start.append(0.)
+            lowflag.append(False)
             lowbound.append(0.)
+            highflag.append(False)
             highbound.append(0.)
-    
+            fixed.append(True)
+    params = numpy.asarray(params, dtype=bool)
+    inds = numpy.where(params)
+    start = numpy.asarray(start)
+    lowbound = numpy.asarray(lowbound)
+    highbound = numpy.asarray(highbound)
+    fixed = numpy.asarray(fixed, dtype=bool)
+    lowflag = numpy.asarray(lowflag, dtype=bool)
+    highflag = numpy.asarray(highflag, dtype=bool)
+    parinfo = []
+    for loop in range(10):
+        if lowflag[loop] and highflag[loop]:
+            if (lowbound[loop] == highbound[loop]):
+                str1 = '\nBad limits on parameter %d; check your inputs\n' % (
+                    loop)
+                plotgui.non_linear_set_fitting_text_field.insert(Tk.END, str1)
+                return
+        if params[loop]:
+            parinfo1 = {'value': start[loop], 'fixed': fixed[loop],
+                        'limited': [lowflag[loop], highflag[loop]],
+                        'limits': [lowbound[loop], highbound[loop]]}
+            parinfo.append(parinfo1)
+    plotgui.non_linear_set_fitting_text_field.insert(
+        Tk.END,'Function to fit:\n')
+    plotgui.non_linear_set_fitting_text_field.insert(
+        Tk.END, function_string+'\n')
+    try:
+        yerrors = (numpy.copy(plotgui.ydata[nset-1]['lowerror']) +
+                   numpy.copy(plotgui.ydata[nset-1]['higherror']))/2.
+    except:
+        plotgui.non_linear_set_fitting_text_field.insert(
+            'Constant uncertainties used.\n')
+        yerrors = plotgui.xdata[nset-1]['values']*0.+0.01
+    emin = numpy.min(yerrors)
+    emax = numpy.max(yerrors)
+    if (emin == 0.) and (emax == 0.):
+        yerrors = yerrors+0.01
+    else:
+        inds = numpy.where(yerrors <= 0.)
+        altinds = numpy.where(yerrors > 0.)
+        if len(inds[0]) == 0:
+            yerrors = yerrors*0.+0.01
+        else:
+            meanerror = numpy.mean(yerrors[altinds])
+            yerrors[inds] = meanerror
+    start_values = start[params]
+    fitparams, yfit = mpfitexpr.mpfitexpr(
+        function_string, plotgui.xdata[nset-1]['values'],
+        plotgui.ydata[nset-1]['values'], yerrors, start_values, check=True,
+        full_output=True, parinfo=parinfo, ftol=tolerance)
+    str1 = '\nMPFIT status: %d\n' % (fitparams.status)
+    if fitparams.status < 0:
+        str1 = 'Error in the fitting: '+str1
+    else:
+        cov = fitparams.covar
+        pcov = cov*0.
+        sh1 = cov.shape
+        for i in range(sh1[0]):
+            for j in range(sh1[1]):
+                pcov[i, j] = cov[i,j]/math.sqrt(cov[i, i]*cov[j, j])
+        for loop in range(len(fitparams.params)):
+            str1 = str1 + 'parameter %2d : value %15.8g +/- %15.8g\n' % (
+                loop+1, fitparams.params[loop], fitparams.perror[loop])
+    plotgui.non_linear_set_fitting_text_field.insert(Tk.END, str1)
+    xvalues = numpy.copy(plotgui.xdata[nset-1]['values'])
+    yvalues = numpy.copy(plotgui.ydata[nset-1]['values'])
+    plotgui.add_set(xvalues, yfit)
+    oset = 1*plotgui.nsets
+    mpfit_values = {
+        'fit_parameters': fitparams, 'set_fit': nset, 'set_out': oset,
+        'xvalues': xvalues, 'yvalues': yvalues, 'yerrors': yerrors
+    }
+    plotgui.mpfit_values.append(mpfit_values)
+    make_plot.make_plot(plotgui)
+    for loop in range(10):
+        if params[loop]:
+            plotgui.tkcontrol[loop][2].delete(0, Tk.END)
+            plotgui.tkcontrol[loop][2].insert(0, str(fitparams.params[loop]))

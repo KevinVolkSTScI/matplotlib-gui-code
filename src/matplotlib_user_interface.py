@@ -189,6 +189,7 @@ import plot_flag_utilities
 import window_creation
 import plot_controls
 import non_linear_fitting
+import save_and_restore_plot
 
 # The following are "global" variables with line/marker information from
 # matplotlib.  These are used, but not changed, in the code in more than one
@@ -305,6 +306,7 @@ class PlotGUI(Tk.Frame):
         # The plot_range value holds the current x and y axis range values.
         # These are the default values when no data is yet available.
         self.plot_range = [[0.0, 1.0, 0.0, 1.0], ]
+        self.mpfit_values = []
         # The title string for the plot is kept in self.title.
         object_utilities.initialize_plot_objects(self)
         self.title = [' ', ]
