@@ -1,3 +1,27 @@
+#! /usr/bin/env python
+#
+"""
+This code uses matplotlib and numpy to produce a window within which a FITS 
+image can be displayed.  The reason for having this and not using the usual 
+packages already in existence is that I will want specific functions on the 
+image for data reduction.
+
+Usage:
+
+fits_image_display.py imagename.fits
+
+or just
+
+fits_image_display.py
+
+In the first case the image name given is loaded (if possible) and displayed.
+
+In the second case the widget comes up and one can read in an image.
+
+Note that if the image is of dimension larger than 2 then the first "plane" 
+is used.  There is no mechanism here for using other planes.
+
+"""
 import math
 import sys
 import numpy
@@ -171,7 +195,11 @@ class ImageGUI(Tk.Frame):
         lb.pack(side=Tk.TOP)
         self.zsmaxField = Tk.Entry(fr1, width=10)
         self.zsmaxField.pack()
-        zmin1, zmax1 = self.get_limits(self.image)
+        try:
+            zmin1, zmax1 = self.get_limits(self.image)
+        except:
+            zmin1 = 0.
+            zmax1 = 1.
         general_utilities.put_value(zmin1, self.zsminField)
         general_utilities.put_value(zmax1, self.zsmaxField)
         lb = Tk.Label(newframe, text='Image Scaling')
@@ -1059,4 +1087,15 @@ class ImageGUI(Tk.Frame):
         newimage[image < 0.] = -1. * newimage[image < 0.]
         self.transvalues = [1.]
         return newimage
+
+if __name__ == "__main__":
+    # create the window
+    root = Tk.Tk()
+    root.title('Image Display Widget')
+    imdisp = ImageGUI(root)
+    if '.fits' in sys.argv[-1]:
+        imdisp.imagename = sys.argv[-1]
+        imdisp.get_image()
+    imdisp.make_image_window()
+    root.mainloop()
 
