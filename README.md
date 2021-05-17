@@ -14,7 +14,7 @@ and tkinter as well as other standard Python packages.
 ** Note: MacOS 10.14 Mojave Issue With Python version 3.7
 
 The code here uses the Tkinter package that is part of the standard Python 
-distribution.  In the MacOS version 10.14 (Majave) there is an issue that
+distribution.  In the MacOS version 10.14 (Mojave) there is an issue that
 causes the use of the Tkinter package functions with Python 3.7 to crash
 the user's session.  This issue does not exist in Python versions 3.6 or 
 3.8 with this version of MacOS, and it did not exist in the previous MacOS 
