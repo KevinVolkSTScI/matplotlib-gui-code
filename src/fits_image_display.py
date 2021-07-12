@@ -36,6 +36,7 @@ import matplotlib.lines as mlines
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from matplotlib.colors import LogNorm
+import matplotlib.pyplot as pyplot
 import general_utilities
 
 class ImageGUI(Tk.Frame):
@@ -782,6 +783,65 @@ class ImageGUI(Tk.Frame):
         ypixel = int(self.zoom[2]+event.ydata+0.5)
         if (xpixel is None) or (ypixel is None):
             return
+        if event.key == 'j':
+            x0 = xpixel-10
+            if x0 < 0:
+                x0 = 0
+            x1 = x0 + 22
+            if x1 > imshape[1]:
+                x1 = imshape[1]
+                x0 = x1 - 22
+            y0 = ypixel-2
+            if y0 < 0:
+                y0 = 0
+            y1 = y0 + 5
+            if y1 > imshape[0]:
+                y1 = imshape[0]
+                y0 = y1 - 5
+            subim = numpy.copy(self.image[y0:y1, x0:x1])
+            vector = numpy.mean(subim, axis=0)
+            xvalues = numpy.arange(len(vector))+x0
+            ind = numpy.argmax(vector)
+            mind = numpy.argmin(vector)
+            start = numpy.asarray(
+                [xvalues[ind], vector[ind], 1., vector[mind]])
+            params, yfit = mpfitexpr.mpfitexpr(
+                "p[3]+p[1]/numpy.exp((x-p[0])*(x-p[0])/(2.*p[2]*p[2]))",
+                xvalues, vector, vector*0.+1., start)
+            try:
+                str1 = 'Centre: %.3f\nPeak: %.2f\nSigma: %.2f\nBaseline: %.2f' % (
+                    params[0], params[1], params[2], params[3])
+                print(str1)
+            except:
+                pass
+            tstring = 'Mean of lines %d:%d' % (y0, y1)
+            self.plotxy(xvalues, vector, symbol='-', colour='blue',
+                        xlabel='x pixel position', ylabel='Signal (ADU/s)',
+                        title=tstring, ymodel=yfit, fitparams=params)
+            return
+        if event.key == 'k':
+            y0 = ypixel-10
+            if y0 < 0:
+                y0 = 0
+            y1 = y0 + 22
+            if y1 > imshape[0]:
+                y1 = imshape[0]
+                y0 = y1 - 22
+            x0 = xpixel-2
+            if x0 < 0:
+                x0 = 0
+            x1 = x0 + 5
+            if x1 >= imshape[0]:
+                x1 = imshape[0]
+                x0 = x1 - 5
+            subim = numpy.copy(self.image[y0:y1, x0:x1])
+            vector = numpy.mean(subim, axis=1)
+            xvalues = numpy.arange(len(vector))+y0
+            tstring = 'Mean of columns %d:%d' % (x0, x1)
+            self.plotxy(xvalues, vector, symbol='-', colour='blue',
+                        xlabel='y pixel position', ylabel='Signal (ADU/s)',
+                        title=tstring)
+            return
         self.xposition = self.zoom[1]+event.xdata
         self.yposition = self.zoom[2]+event.ydata
         sh1 = self.image.shape
@@ -1087,6 +1147,41 @@ class ImageGUI(Tk.Frame):
         newimage[image < 0.] = -1. * newimage[image < 0.]
         self.transvalues = [1.]
         return newimage
+
+    def plotxy(self, xvalues, yvalues, **parameters):
+        """
+        A basic plot routine, for quick use without having to keep looking up the 
+        plot commands; parameters can include "symbol", "title", "xlabel", and 
+        "ylabel".
+        """
+        pyplot.figure(1)
+        pyplot.subplot(111)
+        colour = parameters.get("colour")
+        sym = parameters.get("symbol")
+        markersize = parameters.get("markersize")
+        ymodel = parameters.get("ymodel")
+        params = parameters.get("fitparams")
+        if sym is None:
+            sym='-'
+        if colour is None:
+            colour = 'black'
+        if markersize is None:
+            markersize = 2.0
+        pyplot.plot(xvalues, yvalues, sym, color=colour, markersize=markersize)
+        if parameters.get("title") is not None:
+            pyplot.title(parameters.get("title"))
+        if not ymodel is None:
+            pyplot.plot(xvalues, ymodel, ':', color='red')
+            if not params is None:
+                str1 = 'Fit: Centre %.3f Peak %.2f Sigma %.2f Baseline %.2f' % (
+                    params[0], params[1], params[2], params[3])
+                pyplot.suptitle(str1)
+        if parameters.get("xlabel") is not None:
+            pyplot.xlabel(parameters.get("xlabel"))
+        if parameters.get("ylabel") is not None:
+            pyplot.ylabel(parameters.get("ylabel"))
+        pyplot.show()
+
 
 if __name__ == "__main__":
     # create the window
