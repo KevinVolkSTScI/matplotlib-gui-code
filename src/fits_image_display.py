@@ -837,6 +837,19 @@ class ImageGUI(Tk.Frame):
             subim = numpy.copy(self.image[y0:y1, x0:x1])
             vector = numpy.mean(subim, axis=1)
             xvalues = numpy.arange(len(vector))+y0
+            ind = numpy.argmax(vector)
+            mind = numpy.argmin(vector)
+            start = numpy.asarray(
+                [xvalues[ind], vector[ind], 1., vector[mind]])
+            params, yfit = mpfitexpr.mpfitexpr(
+                "p[3]+p[1]/numpy.exp((x-p[0])*(x-p[0])/(2.*p[2]*p[2]))",
+                xvalues, vector, vector*0.+1., start)
+            try:
+                str1 = 'Centre: %.3f\nPeak: %.2f\nSigma: %.2f\nBaseline: %.2f' % (
+                    params[0], params[1], params[2], params[3])
+                print(str1)
+            except:
+                pass
             tstring = 'Mean of columns %d:%d' % (x0, x1)
             self.plotxy(xvalues, vector, symbol='-', colour='blue',
                         xlabel='y pixel position', ylabel='Signal (ADU/s)',
