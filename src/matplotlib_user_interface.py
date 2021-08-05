@@ -181,6 +181,7 @@ import object_utilities
 import label_utilities
 import make_plot
 import edit_objects
+import save_and_restore_plot
 import fits_image_display
 import histogram_utilities
 import data_set_utilities
@@ -189,7 +190,6 @@ import plot_flag_utilities
 import window_creation
 import plot_controls
 import non_linear_fitting
-import save_and_restore_plot
 
 # The following are "global" variables with line/marker information from
 # matplotlib.  These are used, but not changed, in the code in more than one
@@ -1008,10 +1008,6 @@ class PlotGUI(Tk.Frame):
             self.set_properties[self.nsets]['plot'] = 1
         else:
             self.set_properties[self.nsets]['plot'] = current_plot
-        self.set_properties[self.nsets]['xmin'] = numpy.min(xvalues)
-        self.set_properties[self.nsets]['xmax'] = numpy.max(xvalues)
-        self.set_properties[self.nsets]['ymin'] = numpy.min(yvalues)
-        self.set_properties[self.nsets]['ymax'] = numpy.max(yvalues)
         m = self.nsets % 10
         n = int(math.floor(self.nsets / 10))
         self.set_properties[self.nsets]['symbol'] = self.markerset[m]

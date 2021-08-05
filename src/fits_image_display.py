@@ -36,7 +36,7 @@ import matplotlib.lines as mlines
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from matplotlib.colors import LogNorm
-import matplotlib.pyplot as pyplot
+from photutils import aperture
 import general_utilities
 
 class ImageGUI(Tk.Frame):
@@ -64,6 +64,8 @@ class ImageGUI(Tk.Frame):
         self.root = None
         self.indpi = 100
         self.zoom = [1, 0, 0]
+        self.segment = 10
+        self.cross = 2
         self.xposition = None
         self.yposition = None
         if parent is not None:
@@ -676,7 +678,7 @@ class ImageGUI(Tk.Frame):
 
     def imageHistogramPosition(self, event):
         """
-        Post mouse position on image to the status line.
+        Post mouse position on histogram plot to the status line.
 
         When a normal histogram plot exists, this routine takes the mouse
         position events and updates the position values at the top of the
@@ -698,6 +700,56 @@ class ImageGUI(Tk.Frame):
                 ypos = general_utilities.inverse_hybrid_transform(ypos)
             s1 = 'Value: [%g, %g]' % (xpos, ypos)
             self.imageHistogramLabelText.set(s1)
+        except Exception:
+            pass
+
+    def plotPosition(self, event):
+        """
+        Post mouse position on (x, y) plot to the status line.
+
+        When a normal plot exists, this routine takes the mouse
+        position events and updates the position values at the top of the
+        window.
+
+        Parameters
+        ----------
+            event     a standard Tkinter event variable.
+
+        Returns
+        -------
+            No values are returned by this routine.
+
+        """
+        try:
+            xpos = float(event.xdata)
+            ypos = float(event.ydata)
+            s1 = 'Value: [%g, %g]' % (xpos, ypos)
+            self.plotLabelText.set(s1)
+        except Exception:
+            pass
+
+    def profilePosition(self, event):
+        """
+        Post mouse position on the profile plot to the status line.
+
+        When a peofile plot exists, this routine takes the mouse
+        position events and updates the position values at the top of the
+        window.
+
+        Parameters
+        ----------
+            event     a standard Tkinter event variable.
+
+        Returns
+        -------
+            No values are returned by this routine.
+
+        """
+        try:
+            xpos = float(event.xdata)
+            ypos = float(event.ydata)
+            s1 = 'Value: [%g, %g]' % (xpos, ypos)
+            self.profileLabelText.set(s1)
         except Exception:
             pass
 
@@ -783,81 +835,75 @@ class ImageGUI(Tk.Frame):
         ypixel = int(self.zoom[2]+event.ydata+0.5)
         if (xpixel is None) or (ypixel is None):
             return
-        if event.key == 'j':
-            x0 = xpixel-10
-            if x0 < 0:
-                x0 = 0
-            x1 = x0 + 22
-            if x1 > imshape[1]:
-                x1 = imshape[1]
-                x0 = x1 - 22
-            y0 = ypixel-2
-            if y0 < 0:
-                y0 = 0
-            y1 = y0 + 5
-            if y1 > imshape[0]:
-                y1 = imshape[0]
-                y0 = y1 - 5
-            subim = numpy.copy(self.image[y0:y1, x0:x1])
-            vector = numpy.mean(subim, axis=0)
-            xvalues = numpy.arange(len(vector))+x0
-            ind = numpy.argmax(vector)
-            mind = numpy.argmin(vector)
-            start = numpy.asarray(
-                [xvalues[ind], vector[ind], 1., vector[mind]])
-            params, yfit = mpfitexpr.mpfitexpr(
-                "p[3]+p[1]/numpy.exp((x-p[0])*(x-p[0])/(2.*p[2]*p[2]))",
-                xvalues, vector, vector*0.+1., start)
-            try:
-                str1 = 'Centre: %.3f\nPeak: %.2f\nSigma: %.2f\nBaseline: %.2f' % (
-                    params[0], params[1], params[2], params[3])
-                print(str1)
-            except:
-                pass
-            tstring = 'Mean of lines %d:%d' % (y0, y1)
-            self.plotxy(xvalues, vector, symbol='-', colour='blue',
-                        xlabel='x pixel position', ylabel='Signal (ADU/s)',
-                        title=tstring, ymodel=yfit, fitparams=params)
-            return
-        if event.key == 'k':
-            y0 = ypixel-10
-            if y0 < 0:
-                y0 = 0
-            y1 = y0 + 22
-            if y1 > imshape[0]:
-                y1 = imshape[0]
-                y0 = y1 - 22
-            x0 = xpixel-2
-            if x0 < 0:
-                x0 = 0
-            x1 = x0 + 5
-            if x1 >= imshape[0]:
-                x1 = imshape[0]
-                x0 = x1 - 5
-            subim = numpy.copy(self.image[y0:y1, x0:x1])
-            vector = numpy.mean(subim, axis=1)
-            xvalues = numpy.arange(len(vector))+y0
-            ind = numpy.argmax(vector)
-            mind = numpy.argmin(vector)
-            start = numpy.asarray(
-                [xvalues[ind], vector[ind], 1., vector[mind]])
-            params, yfit = mpfitexpr.mpfitexpr(
-                "p[3]+p[1]/numpy.exp((x-p[0])*(x-p[0])/(2.*p[2]*p[2]))",
-                xvalues, vector, vector*0.+1., start)
-            try:
-                str1 = 'Centre: %.3f\nPeak: %.2f\nSigma: %.2f\nBaseline: %.2f' % (
-                    params[0], params[1], params[2], params[3])
-                print(str1)
-            except:
-                pass
-            tstring = 'Mean of columns %d:%d' % (x0, x1)
-            self.plotxy(xvalues, vector, symbol='-', colour='blue',
-                        xlabel='y pixel position', ylabel='Signal (ADU/s)',
-                        title=tstring)
-            return
         self.xposition = self.zoom[1]+event.xdata
         self.yposition = self.zoom[2]+event.ydata
         sh1 = self.image.shape
+        if event.key == 'l':
+            yvalues = numpy.squeeze(self.image[ypixel, :])
+            xvalues = numpy.arange(sh1[0])+1
+            self.plotxy(xvalues, yvalues, colour='blue', symb=None,
+                        xlabel='Column (Pixels)', ylabel='Pixel Value',
+                        title='Line %d' % (ypixel))
+            return
+        if event.key == 'c':
+            yvalues = numpy.squeeze(self.image[:, xpixel])
+            xvalues = numpy.arange(sh1[1])+1
+            self.plotxy(xvalues, yvalues, colour='blue', symb=None,
+                        xlabel='Line (Pixels)', ylabel='Pixel Value',
+                        title='Column %d' % (xpixel))
+            return
+        if event.key == 'j':
+            xstart = xpixel - self.segment
+            if xstart < 0:
+                xstart = 0
+            xend = xstart + self.segment+self.segment + 2
+            if xend > sh1[1]:
+                xend = sh1[1]
+                xstart = xend - self.segment-self.segment - 2
+            ystart = ypixel - self.cross
+            if ystart < 0:
+                ystart = 0
+            yend = ystart + self.cross + self.cross + 2
+            if yend > sh1[0]:
+                yend = sh1[0]
+                ystart = yend - self.cross - self.cross - 2
+            subim = numpy.copy(self.image[ystart:yend, xstart:xend])
+            yvalues = numpy.mean(subim, axis=0)
+            xvalues = numpy.arange(len(yvalues))+xstart
+            tstring = 'Mean of columns (y): %d:%d' % (ystart, yend)
+            self.plotxy(xvalues, yvalues, symbol=None, colour='blue',
+                        xlabel='x pixel position', ylabel='Mean Signal',
+                        title=tstring)
+            return
+        if event.key == 'k':
+            ystart = ypixel-10
+            if ystart < 0:
+                ystart = 0
+            yend = ystart + self.segment + self.segment + 2
+            if yend > sh1[0]:
+                yend = sh1[0]
+                ystart = yend - self.segment - self.segment - 2
+            xstart = xpixel-2
+            if xstart < 0:
+                xstart = 0
+            xend = xstart + self.cross + self.cross + 2
+            if xend >= sh1[1]:
+                xend = sh1[1]
+                xstart = xend - self.cross - self.cross - 2
+            subim = numpy.copy(self.image[ystart:yend, xstart:xend])
+            yvalues = numpy.mean(subim, axis=1)
+            xvalues = numpy.arange(len(yvalues))+ystart
+            tstring = 'Mean of rows (x) %d:%d' % (ystart, yend)
+            self.plotxy(xvalues, yvalues, symbol='-', colour='blue',
+                        xlabel='y pixel position', ylabel='Signal (ADU/s)',
+                        title=tstring)
+            return
+        if event.key == 'r':
+            tstring = 'Radial profile at (%.3f %.3f)' % (
+                event.xdata, event.ydata)
+            self.plot_radial_profile(event.xdata, event.ydata,
+                                     xlabel='Radius (pixels)',
+                                     ylabel='Signal', title=tstring)
         xmin, ymin = self.zoom_corner(sh1, self.zoom[0], self.xposition,
                                       self.yposition)
         self.zoom[1] = xmin
@@ -928,6 +974,204 @@ class ImageGUI(Tk.Frame):
         except Exception:
             pass
 
+    def plotxy(self, xvalues, yvalues, **parameters):
+        BGCOL = '#F8F8FF'
+        if self.image is None:
+            return
+        try:
+            plotwindow = Tk.Toplevel()
+            plotwindow.config(bg=BGCOL)
+            self.plotLabelText = Tk.StringVar()
+            self.plotLabel = Tk.Label(
+                plotwindow, textvariable=self.plotLabelText,
+                anchor=Tk.N, width=70)
+            self.plotLabel.pack()
+            self.plotLabelText.set("Value:")
+            self.p4 = Figure(figsize=(6, 6), dpi=100)
+            sp1 = self.p4.add_subplot(1, 1, 1)
+            c1 = FigureCanvasTkAgg(self.p4, master=plotwindow)
+            c1.mpl_connect("motion_notify_event", self.plotPosition)
+            symbol = parameters.get('symb')
+            if symbol is None:
+                symbol='-'
+            colour = parameters.get('colour')
+            if colour is None:
+                colour = 'blue'
+            sp1.plot(xvalues, yvalues, symbol, color=colour)
+            sp1.set_xlabel(parameters.get('xlabel'))
+            sp1.set_ylabel(parameters.get('ylabel'))
+            sp1.set_title(parameters.get('title'))
+            c1.draw()
+            c1.get_tk_widget().pack(side=Tk.TOP, fill=Tk.BOTH, expand=Tk.YES)
+            h1 = Tk.Frame(plotwindow)
+            h1.pack(side=Tk.TOP)
+            h1.config(bg=BGCOL)
+            button = Tk.Button(
+                h1, text="Save values",
+                command=lambda: general_utilities.save_data_set_values(
+                    valuesx, yvalues, outstring))
+            button.pack(side=Tk.LEFT)
+            button.config(bg=BGCOL)
+            button = Tk.Button(
+                h1, text="Save as PS",
+                command=lambda: general_utilities.save_ps_figure(self.p4))
+            button.pack(side=Tk.LEFT)
+            button.config(bg=BGCOL)
+            button = Tk.Button(
+                h1, text="Save as PNG",
+                command=lambda: general_utilities.save_png_figure(self.p4))
+            button.pack(side=Tk.LEFT)
+            button.config(bg=BGCOL)
+            button = Tk.Button(h1, text="Close",
+                               command=plotwindow.destroy)
+            button.pack()
+            button.config(bg=BGCOL)
+        except Exception:
+            pass
+
+    def plot_radial_profile(self, xposition, yposition, **parameters):
+        BGCOL = '#F8F8FF'
+        if self.image is None:
+            return
+        if True:
+#        try:
+            xvalues, yvalues, yerror = self.radial_profile(
+                self.image, 1.0, 10., centre=[xposition, yposition])
+            profilewindow = Tk.Toplevel()
+            profilewindow.config(bg=BGCOL)
+            self.profileLabelText = Tk.StringVar()
+            self.profileLabel = Tk.Label(
+                profilewindow, textvariable=self.profileLabelText,
+                anchor=Tk.N, width=70)
+            self.profileLabel.pack()
+            self.profileLabelText.set("Value:")
+            self.p5 = Figure(figsize=(6, 6), dpi=100)
+            sp1 = self.p5.add_subplot(1, 1, 1)
+            c1 = FigureCanvasTkAgg(self.p5, master=profilewindow)
+            c1.mpl_connect("motion_notify_event", self.profilePosition)
+            symbol = parameters.get('symb')
+            if symbol is None:
+                symbol='-'
+            colour = parameters.get('colour')
+            if colour is None:
+                colour = 'blue'
+            sp1.plot(xvalues, yvalues, symbol, color=colour)
+            sp1.set_xlabel(parameters.get('xlabel'))
+            sp1.set_ylabel(parameters.get('ylabel'))
+            sp1.set_title(parameters.get('title'))
+            c1.draw()
+            c1.get_tk_widget().pack(side=Tk.TOP, fill=Tk.BOTH, expand=Tk.YES)
+            h1 = Tk.Frame(profilewindow)
+            h1.pack(side=Tk.TOP)
+            h1.config(bg=BGCOL)
+            button = Tk.Button(
+                h1, text="Save values",
+                command=lambda: general_utilities.save_data_set_values(
+                    valuesx, yvalues, outstring))
+            button.pack(side=Tk.LEFT)
+            button.config(bg=BGCOL)
+            button = Tk.Button(
+                h1, text="Save as PS",
+                command=lambda: general_utilities.save_ps_figure(self.p5))
+            button.pack(side=Tk.LEFT)
+            button.config(bg=BGCOL)
+            button = Tk.Button(
+                h1, text="Save as PNG",
+                command=lambda: general_utilities.save_png_figure(self.p5))
+            button.pack(side=Tk.LEFT)
+            button.config(bg=BGCOL)
+            button = Tk.Button(h1, text="Close",
+                               command=profilewindow.destroy)
+            button.pack()
+            button.config(bg=BGCOL)
+#        except Exception:
+#            pass
+
+    def radial_profile(self, array, rstep=0.5, rmax=0.0, centre=None, error=None):
+        """
+        This routine calculates the radial profile of values for an image.  The
+        image is passed as the first argument.  The centre pixel is used for the
+        centre point of the calculations unless a value is passed to the routine.
+
+        Parameters
+        ----------
+        array :   A two-dimensional numpy image (assumed to be float values).
+
+        rstep :   Optional floating point step value in pixels for the encircled
+                  energy function.
+
+        rmax :   Optional floating point value, the maximum radius in pixels for
+                 the encircled energy function. If no value is given, the
+                 distance from the centre position to the nearest image edge
+                 is used.
+ 
+        centre : Optional two-element list of the [x, y] values of the centre from
+                 which the radius is calculated.  It is assumed to be two float
+                 values, x and then y.  If not provided, the image centre is used.
+
+        error :  An optional two-dimensional numpy image (assumed to be float 
+                 values) of the uncertainties per pixel; if nothing is passed, 
+                 the uncertainties are all set to zero.  The errors must all be 
+                 positive.
+
+        Returns
+        -------
+
+        radius :  A one-dimensional numpy float array of radius values in pixels.
+
+        signal :  A one-dimensional numpy float array of the signal values
+
+        signal_error : A one-dimensional numpy float array of the uncertainties 
+                       in the signal values
+
+        """
+        shape = array.shape
+        if len(shape) != 2:
+            print('Error: input image needs to be two dimensional.')
+            return None, None, None
+        if error is None:
+            uncertainties = array*0.
+        else:
+            uncertainties = numpy.copy(error)
+            if uncertainites.shape != shape:
+                print('Error: the uncertainty array is not the same shape as the ')
+                print('  signal array, setting to zero.')
+                uncertainties = array*0.
+        # The following assumes that an integer value corresponds to the pixel
+        # centre, as opposed to the IRAF convention that a value of 0.5 denotes
+        # the pixel centre
+        if centre is None:
+            centre = ((shape[1]-1)/2., (shape[0]-1)/2.)
+        if rmax <= 0.:
+            rmax = max(centre[0], abs(centre[0] - shape[1]),
+                       centre[1], abs(centre[1] - shape[0]))
+        if rmax <= rstep:
+            print('Error: maxumum radius value less than the step value.')
+            return None, None, None
+        nrad = int(rmax/rstep) + 2
+        rout = numpy.zeros((nrad), dtype=numpy.float32)
+        signal = numpy.zeros((nrad), dtype=numpy.float32)
+        signal_error = numpy.zeros((nrad), dtype=numpy.float32)
+        nout = nrad
+        for loop in range(nrad):
+            rinner = loop * rstep
+            router = (loop+1) * rstep
+            rout[loop] = (router+rinner)/2.
+            if router <= rmax:
+                if rinner > 0.:
+                    aper = aperture.CircularAnnulus(centre, rinner, router)
+                else:
+                    aper = aperture.CircularAperture(centre, router)
+                values = aperture.aperture_photometry(array, aper,
+                                                      method='exact')
+                signal[loop] = values['aperture_sum']
+                evalues = aperture.aperture_photometry(uncertainties, aper,
+                                                       method='exact')
+                signal_error[loop] = evalues['aperture_sum']
+            else:
+                nout = loop
+        return rout[0:nout], signal[0:nout], signal_error[0:nout]
+        
     def displayImage(self):
         """
         Display the current image in the display area.
@@ -1160,41 +1404,6 @@ class ImageGUI(Tk.Frame):
         newimage[image < 0.] = -1. * newimage[image < 0.]
         self.transvalues = [1.]
         return newimage
-
-    def plotxy(self, xvalues, yvalues, **parameters):
-        """
-        A basic plot routine, for quick use without having to keep looking up the 
-        plot commands; parameters can include "symbol", "title", "xlabel", and 
-        "ylabel".
-        """
-        pyplot.figure(1)
-        pyplot.subplot(111)
-        colour = parameters.get("colour")
-        sym = parameters.get("symbol")
-        markersize = parameters.get("markersize")
-        ymodel = parameters.get("ymodel")
-        params = parameters.get("fitparams")
-        if sym is None:
-            sym='-'
-        if colour is None:
-            colour = 'black'
-        if markersize is None:
-            markersize = 2.0
-        pyplot.plot(xvalues, yvalues, sym, color=colour, markersize=markersize)
-        if parameters.get("title") is not None:
-            pyplot.title(parameters.get("title"))
-        if not ymodel is None:
-            pyplot.plot(xvalues, ymodel, ':', color='red')
-            if not params is None:
-                str1 = 'Fit: Centre %.3f Peak %.2f Sigma %.2f Baseline %.2f' % (
-                    params[0], params[1], params[2], params[3])
-                pyplot.suptitle(str1)
-        if parameters.get("xlabel") is not None:
-            pyplot.xlabel(parameters.get("xlabel"))
-        if parameters.get("ylabel") is not None:
-            pyplot.ylabel(parameters.get("ylabel"))
-        pyplot.show()
-
 
 if __name__ == "__main__":
     # create the window
