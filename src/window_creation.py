@@ -86,8 +86,8 @@ def make_menus(plotgui, parent):
     menu1.add_command(
         label='Write Data',
         command=lambda: data_set_utilities.write_data_sets(plotgui))
-    menu1.add_separator()
-    menu1.add_command(label='Read FITS Image', command=plotgui.read_image)
+#    menu1.add_separator()
+#    menu1.add_command(label='Read FITS Image', command=plotgui.read_image)
     label1 = Tk.Label(parent, text="    ")
     label1.pack(side=Tk.LEFT, fill=Tk.X, expand=1)
     menubutton2 = Tk.Menubutton(parent, text="Sets")
