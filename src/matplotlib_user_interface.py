@@ -119,37 +119,6 @@ after making the call to show_plot with the sets, to keep the window in place.
 Otherwise the window will disappear after the show_plot call if nothing else
 is being done in the script.
 
-************************************************************
-
-Using the image display functionality
-
-  In a similar way one can use the image display functionality from the python
-command line.  There is a utility routine "showimage" for this purpose.
-
->>> from astropy.io import fits
->>>> imagefilename = 'test.fits'
->>> image = fits.getdata(imagefilename)
->>> import matplotlib_user_interface as mui
->>> root, myplot = mui.showimage(image, imagefilename, dpi=300)
-
-The file name is optional.  The number of dots per inch is also optional.
-The default number of dots per inch is 100.
-
-If one wishes to make the calls explicitly they are (parameter self.indpi is
-the number of dots per inch):
-
->>>> root = Tk.Tk()
->>>> plotobject = mui.ImageGUI(root)
->>>> plotobject.image = image
->>>> plotobject.imagefilename = 'some_name.fits'
->>>> plotobject.indpi = 300
->>>> plotobject.make_image_window()
-
-As above, if done in a script one may need to add a call
-
->>>> root.mainloop()
-
-to keep the window active.
 
 """
 import math
@@ -182,7 +151,7 @@ import label_utilities
 import make_plot
 import edit_objects
 import save_and_restore_plot
-import fits_image_display
+#import fits_image_display
 import histogram_utilities
 import data_set_utilities
 import data_set_operations
