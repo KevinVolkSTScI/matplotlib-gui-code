@@ -11,7 +11,7 @@ with open("src/README.md", "r") as fh:
 
 setuptools.setup(
     name="matplotlib_user_interface", 
-    version="2021.05.08",
+    version="2021.08.07",
     author="Kevin Volk",
     author_email="kvolk@stsci.edu",
     description="A Matplotlib GUI program reminiscent of xmgrace.",
@@ -26,12 +26,12 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.8',
     install_requires=[
-        'astropy>=4.0',
-        'matplotlib>=3.0.0',
-        'numpy',
-        'scipy>=1.1.0',
-        'matplotlib'
+        'astropy>=4.2',
+        'matplotlib>=3.4.2',
+        'numpy>=1.20.3',
+        'scipy>=1.6.0',
+        'photutils>=1.1.0'
     ],                                                                 
 )
