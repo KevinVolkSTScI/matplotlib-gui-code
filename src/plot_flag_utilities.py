@@ -311,8 +311,9 @@ def tile_plots(plotgui):
     plotgui.currentplot_set.insert(0, '1')
     buttonframe = Tk.Frame(plotgui.tile_window)
     buttonframe.pack(side=Tk.TOP)
-    apply_button = Tk.Button(buttonframe, text="Apply Values",
-                             command=window_creation.set_plot_layout)
+    apply_button = Tk.Button(
+      buttonframe, text="Apply Values",
+      command=lambda: window_creation.set_plot_layout(plotgui))
     apply_button.pack(side=Tk.LEFT)
     label1 = Tk.Label(buttonframe, text="     ")
     label1.pack(side=Tk.LEFT)
