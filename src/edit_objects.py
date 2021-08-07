@@ -1,12 +1,30 @@
-import math
+"""
+This file contrains code to edit the different plot objects (lines, labels,
+and so on).  All codes need to be passed in the matplotlib_user_interface
+object ("plotgui") to be able to see the plot objects.
+
+Routines:
+
+edit_lines      make a window for editing the line values
+
+read_lines      read and apply the line values from the edit window
+
+edit_boxes      make a window for editing the box values
+
+read_boxes      read and apply the box values from the edit window
+
+edit_ellipses   make a window for editing the ellipse values
+
+read_ellipses   read and apply the ellipse values from the edit window
+
+edit_vectors    make a window for editing the vector values
+
+read_vectors    read and apply the vector values from the edit window
+
+"""
 import tkinter as Tk
 import tkinter.messagebox
-from tkinter.colorchooser import askcolor
 from tkinter.scrolledtext import ScrolledText
-import matplotlib
-import matplotlib.lines as mlines
-from matplotlib.patches import Rectangle, Ellipse, FancyArrow
-import general_utilities
 import make_plot
 
 def edit_lines(plotgui):
@@ -83,7 +101,7 @@ def read_lines(plotgui, line_message_text, line_window):
 
         line_message_text:  a tkinter text field variable
 
-        line_window:  a tkinter Toplevel or Tk variable that holds the 
+        line_window:  a tkinter Toplevel or Tk variable that holds the
                       text field
 
     Returns
@@ -208,7 +226,7 @@ def read_boxes(plotgui, box_message_text, box_window):
 
         box_message_text:  a tkinter text field variable
 
-        box_window:  a tkinter Toplevel or Tk variable that holds the 
+        box_window:  a tkinter Toplevel or Tk variable that holds the
                       text field
 
     Returns
@@ -342,7 +360,7 @@ def read_ellipses(plotgui, ellipse_message_text, ellipse_window):
 
         ellipse_message_text:  a tkinter text field variable
 
-        ellipse_window:  a tkinter Toplevel or Tk variable that holds the 
+        ellipse_window:  a tkinter Toplevel or Tk variable that holds the
                          text field
 
     Returns
@@ -485,7 +503,7 @@ def read_vectors(plotgui, vector_message_text, vector_window):
 
         vector_message_text:  a tkinter text field variable
 
-        vector_window:  a tkinter Toplevel or Tk variable that holds the 
+        vector_window:  a tkinter Toplevel or Tk variable that holds the
                         text field
 
     Returns
@@ -515,10 +533,7 @@ def read_vectors(plotgui, vector_message_text, vector_window):
                 colour = values[7].strip(' ')
                 linetype = values[8].strip(' ')
                 thickness = float(values[9])
-                if 'true' in values[10].lower():
-                    flag = True
-                else:
-                    flag = False
+                flag = bool('true' in values[10].lower())
                 hcolour = values[11].strip(' ')
                 newvectors.append({'xstart': x1, 'ystart': y1,
                                    'xend': x2, 'yend': y2,
@@ -544,5 +559,3 @@ def read_vectors(plotgui, vector_message_text, vector_window):
     plotgui.plot_vectors = newvectors
     plotgui.number_of_vectors = nvectors
     make_plot.make_plot(plotgui)
-
-

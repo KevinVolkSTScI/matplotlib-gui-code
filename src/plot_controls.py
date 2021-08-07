@@ -1,3 +1,18 @@
+"""
+The routines here allow the user to set the plot parameters (tick marks,
+axis) properties and so on).  The routines all need to be passed the
+matplotlib_user_interface object for the plots ("plotgui").
+
+Routines:
+
+make_plot_control_window    Create the window for general plot controls
+
+apply_plot_parameters_all   Read the parameters from the control window and
+                            apply them to all active plots
+
+apply_plot_parameters       Read the parameters from the control window and
+                            apply them to the currently selected plot
+"""
 import tkinter as Tk
 import tkinter.messagebox
 import general_utilities
@@ -117,73 +132,73 @@ def make_plot_control_window(plotgui):
     holder2.pack(side=Tk.LEFT)
     flag = plotgui.xparameters[plotgui.current_plot-1]['majorgridlines'] == 1
     plotgui.majorxgrid_variable = general_utilities.add_yes_no_field(
-        holder2, "major x grid", flag) 
+        holder2, "major x grid", flag)
     flag = plotgui.xparameters[plotgui.current_plot-1]['minorgridlines'] == 1
     plotgui.minorxgrid_variable = general_utilities.add_yes_no_field(
-        holder2, "minor x grid", flag) 
+        holder2, "minor x grid", flag)
     flag = plotgui.yparameters[plotgui.current_plot-1]['majorgridlines'] == 1
     plotgui.majorygrid_variable = general_utilities.add_yes_no_field(
-        holder2, "major y grid", flag) 
+        holder2, "major y grid", flag)
     flag = plotgui.yparameters[plotgui.current_plot-1]['minorgridlines'] == 1
     plotgui.minorygrid_variable = general_utilities.add_yes_no_field(
-        holder2, "minor y grid", flag) 
+        holder2, "minor y grid", flag)
     sl = general_utilities.separator_line(holder2, 200, 5, 5, True)
     flag = plotgui.xparameters[plotgui.current_plot-1]['logarithmic'] == 1
     plotgui.logx_variable = general_utilities.add_yes_no_field(
-        holder2, "logarithmic x axis", flag) 
+        holder2, "logarithmic x axis", flag)
     flag = plotgui.xparameters[plotgui.current_plot-1]['hybridlog'] == 1
     plotgui.hlogx_variable = general_utilities.add_yes_no_field(
-        holder2, "hybrid log x axis", flag) 
+        holder2, "hybrid log x axis", flag)
     flag = plotgui.yparameters[plotgui.current_plot-1]['logarithmic'] == 1
     plotgui.logy_variable = general_utilities.add_yes_no_field(
-        holder2, "logarithmic y axis", flag) 
+        holder2, "logarithmic y axis", flag)
     flag = plotgui.yparameters[plotgui.current_plot-1]['hybridlog'] == 1
     plotgui.hlogy_variable = general_utilities.add_yes_no_field(
-        holder2, "hybrid log y axis", flag) 
+        holder2, "hybrid log y axis", flag)
     sl = general_utilities.separator_line(holder2, 200, 5, 5, True)
     flag = plotgui.xparameters[plotgui.current_plot-1]['invert'] == 1
     plotgui.invertx_variable = general_utilities.add_yes_no_field(
-        holder2, "invert x axis", flag) 
+        holder2, "invert x axis", flag)
     flag = plotgui.yparameters[plotgui.current_plot-1]['invert'] == 1
     plotgui.inverty_variable = general_utilities.add_yes_no_field(
-        holder2, "invert y axis", flag) 
+        holder2, "invert y axis", flag)
     flag = plotgui.xparameters[plotgui.current_plot-1]['hide'] == 1
     plotgui.hidex_variable = general_utilities.add_yes_no_field(
-        holder2, "hide x axis", flag) 
+        holder2, "hide x axis", flag)
     flag = plotgui.yparameters[plotgui.current_plot-1]['hide'] == 1
     plotgui.hidey_variable = general_utilities.add_yes_no_field(
-        holder2, "hide y axis", flag) 
+        holder2, "hide y axis", flag)
     flag = plotgui.xparameters[plotgui.current_plot-1]['oppositeaxis'] == 1
     plotgui.oppositex_variable = general_utilities.add_yes_no_field(
-        holder2, "opposite x axis", flag) 
+        holder2, "opposite x axis", flag)
     flag = plotgui.yparameters[plotgui.current_plot-1]['oppositeaxis'] == 1
     plotgui.oppositey_variable = general_utilities.add_yes_no_field(
-        holder2, "opposite y axis", flag) 
+        holder2, "opposite y axis", flag)
     sl = general_utilities.separator_line(holder2, 200, 5, 5, True)
     flag = plotgui.xparameters[plotgui.current_plot-1]['hidelabels'] == 1
     plotgui.hidexlabels_variable = general_utilities.add_yes_no_field(
-        holder2, "hide x labels", flag) 
+        holder2, "hide x labels", flag)
     flag = plotgui.yparameters[plotgui.current_plot-1]['hidelabels'] == 1
     plotgui.hideylabels_variable = general_utilities.add_yes_no_field(
-        holder2, "hide y labels", flag) 
+        holder2, "hide y labels", flag)
     flag = plotgui.xparameters[plotgui.current_plot-1]['hideticks'] == 1
     plotgui.hidexticks_variable = general_utilities.add_yes_no_field(
-        holder2, "hide x ticks", flag) 
+        holder2, "hide x ticks", flag)
     flag = plotgui.yparameters[plotgui.current_plot-1]['hideticks'] == 1
     plotgui.hideyticks_variable = general_utilities.add_yes_no_field(
-        holder2, "hide y ticks", flag) 
+        holder2, "hide y ticks", flag)
     flag = plotgui.xparameters[plotgui.current_plot-1]['bothticks'] == 1
     plotgui.bothxticks_variable = general_utilities.add_yes_no_field(
-        holder2, "x ticks both sides", flag) 
+        holder2, "x ticks both sides", flag)
     flag = plotgui.yparameters[plotgui.current_plot-1]['bothticks'] == 1
     plotgui.bothyticks_variable = general_utilities.add_yes_no_field(
-        holder2, "y ticks both sides", flag) 
+        holder2, "y ticks both sides", flag)
     flag = plotgui.xparameters[plotgui.current_plot-1]['inverseticks'] == 1
     plotgui.inversexticks_variable = general_utilities.add_yes_no_field(
-        holder2, "invert x ticks", flag) 
+        holder2, "invert x ticks", flag)
     flag = plotgui.yparameters[plotgui.current_plot-1]['inverseticks'] == 1
     plotgui.inverseyticks_variable = general_utilities.add_yes_no_field(
-        holder2, "invert y ticks", flag) 
+        holder2, "invert y ticks", flag)
     #
     field1 = Tk.Frame(holder)
     field1.pack(side=Tk.TOP)
@@ -359,7 +374,7 @@ def make_plot_control_window(plotgui):
     label1.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         field1, text="Close",
-        command=lambda: plotgui.close_window(plotgui.plot_control_window, 
+        command=lambda: plotgui.close_window(plotgui.plot_control_window,
                                              'plot_control_window'))
     close_button.pack(side=Tk.LEFT)
 
@@ -378,9 +393,7 @@ def apply_plot_parameters_all(plotgui):
         None
 
     """
-    matplotlib_line_list = ['-', '--', '-.', ':', None]
-    matplotlib_line_name_list = ['solid', 'dashed', 'dashdot',
-                                 'dotted', 'None']
+
     plotnumber = plotgui.current_plot
     for loop in range(plotgui.number_of_plots):
         plotgui.current_plot = loop+1
@@ -479,8 +492,7 @@ def apply_plot_parameters(plotgui):
             plotgui.yparameters[plotgui.current_plot-1]['minorticks'] = 0.0
         try:
             ticklength = int(plotgui.ticklengthfield.get())
-            if ticklength < 1:
-                ticklength = 1
+            ticklength = max(ticklength, 1)
         except ValueError:
             ticklength = 6
         plotgui.xparameters[plotgui.current_plot-1]['ticklength'] = ticklength
@@ -509,14 +521,14 @@ def apply_plot_parameters(plotgui):
                     'Margins are limited to the range -0.1 to +0.3.')
                 margin = -0.1
                 plotgui.plot_margin_field.delete(0, Tk.END)
-                plotgui.plot_margin_field.insert, (0, '-0.1')
+                plotgui.plot_margin_field.insert(0, '-0.1')
             plotgui.plot_margin = margin
         except Exception:
             tkinter.messagebox.showinfo(
                 'Warning',
                 'Margin value could not be read, setting to zero.')
             plotgui.plot_margin_field.delete(0, Tk.END)
-            plotgui.plot_margin_field.insert, (0, '0.0')
+            plotgui.plot_margin_field.insert(0, '0.0')
         try:
             xmin = float(plotgui.xmin_field.get())
             xmax = float(plotgui.xmax_field.get())
@@ -556,4 +568,3 @@ def apply_plot_parameters(plotgui):
             'Error',
             'There was some error in the input values.  '
             + 'Please check your inputs.')
-

@@ -1,7 +1,55 @@
+"""
+This routine collects utilities for the operations on the data sets in the
+GUI tool.  Since the file is separate, one needs to pass in the
+matplotlib_users_interface object ("plotgui") to be able to access the
+data set information.
+
+Routines:
+
+    make_data_set_edit_window     make the text window for editing a data
+                                  set
+
+    apply_data_edits              read the data set eidtting window and apply
+                                  the values
+
+    sort_set                      Sort the set values on either x or y,
+                                  with option to sort ascending or decending
+
+    do_sort                       Carry out the actual sorting of a set and
+                                  replace the current values
+
+    make_data_set_fitting_window   Create a window for control of fitting
+                                   functions to a data set
+
+     apply_fitting_fields          Read the fitting window values and apply
+                                   the fitting
+
+    fit_statistics                 Calculate goodness of fit statistics for
+                                   a function fit to data values
+
+    make_data_set_transformation_window    Create the window for control of
+                                           data set transformations
+
+    apply_transformation           Apply the data set transformation defined
+                                   in the input window
+
+    make_data_set_delete_window    Create the window for control of deleeing
+                                   data sets
+
+    delete_set                     Delete a set as specified in the window
+
+    make_data_set_window           Create a window for control of the data set
+                                   properties
+
+    apply_data_set_fields_all      Apply the data set window parameters to
+                                   all sets
+
+    apply_data_set_fields          Apply the data set window parameters to a
+                                   specific set
+
+
+"""
 import math
-import sys
-import os
-import bisect
 from copy import deepcopy
 import tkinter as Tk
 import tkinter.ttk
@@ -13,14 +61,6 @@ from tkinter.scrolledtext import ScrolledText
 import numpy
 from numpy.polynomial import polynomial, legendre, laguerre, chebyshev
 from scipy.interpolate import UnivariateSpline, make_lsq_spline
-import matplotlib
-import matplotlib.lines as mlines
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
-from matplotlib.colors import LogNorm
-from matplotlib.collections import PatchCollection
-from matplotlib.patches import Rectangle, Ellipse, FancyArrow
-from matplotlib.ticker import MultipleLocator
 import general_utilities
 import make_plot
 import data_set_utilities
@@ -558,11 +598,11 @@ def apply_fitting_fields(plotgui):
         general_utilities.list_polynomial_fitpars(fit_type, fit_order, fitpars)
     if fit_type == 'Least-Squares Spline':
         if fit_flag == 0:
-            yerrors = (self.ydata[set_number]['lowerror'] +
-                       self.ydata[set_number]['higherror'])/2.
+            yerrors = (plotgui.ydata[set_number]['lowerror'] +
+                       plotgui.ydata[set_number]['higherror'])/2.
         else:
-            yerrors = (self.xdata[set_number]['lowerror'] +
-                       self.xdata[set_number]['higherror'])/2.
+            yerrors = (plotgui.xdata[set_number]['lowerror'] +
+                       plotgui.xdata[set_number]['higherror'])/2.
         if (numpy.min(yerrors) == 0.) and (numpy.max(yerrors) == 0.):
             yerrors = yerrors + 1.
         xmin1 = numpy.min(xvalues)
@@ -1104,17 +1144,17 @@ def apply_data_set_fields(plotgui, use_label=True):
     Apply the values in the data set window.
 
     This routine reads the values in the plotgui.data_set_window and applies
-    these to the selected data set on the list.  The only possible 
-    exception is whether the label is changed.  
+    these to the selected data set on the list.  The only possible
+    exception is whether the label is changed.
 
     Parameters
     ----------
 
         plotgui:   by assumption a matplotlib_user_interface object
 
-        use_label:  An optional boolean value; if True the label is 
-                    applied, if False it is not; used when all sets 
-                    are assigned the same parameters, as one would 
+        use_label:  An optional boolean value; if True the label is
+                    applied, if False it is not; used when all sets
+                    are assigned the same parameters, as one would
                     normally expect the labels to be distinct
 
     Returns

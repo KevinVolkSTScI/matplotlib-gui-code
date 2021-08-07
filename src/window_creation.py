@@ -1,8 +1,43 @@
-import numpy
+"""
+Routines to make the main window.  One need to pass in the
+matplotlib_user_interface object to the routines.
+
+Routines:
+
+make_widget      Create the main GUI window
+
+make_menus       Create the pull-down menus for the main window
+
+set_font         Bring up a window to set the base font
+
+set_font_values_all    Read the font window parameters and apply to all plots
+
+set_fonr_values        Read the font window parameters and apply to the
+                       current plot
+
+make_controls     Create the plot controls area of the main GUI window
+
+set_plot_layout   Read the plot layout parameters and apply them
+
+make_plot_layout  Create the grid of plots that is requested
+
+make_plot_area    Make the main Figure area within the plot GUI
+
+read_data_set     Bring up a window for reading in a data set from a file
+
+select_file_window   Select a file and read data columns from it
+
+check_columns     Check the columns of data in an ascii file for numerical
+                  values
+
+get_set           Read in data values and assign them to a data set
+
+
+"""
 import tkinter as Tk
 import tkinter.filedialog
 import tkinter.messagebox
-import matplotlib
+import numpy
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import data_set_utilities
@@ -86,8 +121,8 @@ def make_menus(plotgui, parent):
     menu1.add_command(
         label='Write Data',
         command=lambda: data_set_utilities.write_data_sets(plotgui))
-#    menu1.add_separator()
-#    menu1.add_command(label='Read FITS Image', command=plotgui.read_image)
+    menu1.add_separator()
+    menu1.add_command(label='Read FITS Image', command=plotgui.read_image)
     label1 = Tk.Label(parent, text="    ")
     label1.pack(side=Tk.LEFT, fill=Tk.X, expand=1)
     menubutton2 = Tk.Menubutton(parent, text="Sets")
@@ -579,7 +614,7 @@ def make_plot_layout(plotgui, nx1, ny1, n1):
                 plotgui.legend_user_position.append(None)
         for loop in range(plotgui.number_of_plots):
             try:
-                values = plotgui.equal_aspect[loop]
+                value = plotgui.equal_aspect[loop]
             except ValueError:
                 plotgui.equal_aspect.append(False)
             except AttributeError:
@@ -1126,4 +1161,3 @@ def get_set(plotgui, datavalues, labelstring):
             'Error',
             'There was some error in finding the data values.')
         return
-

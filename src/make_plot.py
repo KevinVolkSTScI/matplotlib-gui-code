@@ -1,9 +1,16 @@
+"""
+This routine is the main plotting routine.  The routine needs to be passed
+the matplotlib_user_interface variable ("plotgui") which which the data
+values and options (plus the plot variables) are stored.
+
+Routines:
+
+make_plot    The main plottine routine, which reads many options and applies
+             them as needed.
+
+"""
 import numpy
 import matplotlib
-import matplotlib.lines as mlines
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
-from matplotlib.colors import LogNorm
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Rectangle, Ellipse, FancyArrow
 from matplotlib.ticker import MultipleLocator
@@ -623,7 +630,7 @@ def make_plot(plotgui):
             if hlogyflag == 1:
                 yc1 = ycorner
                 yc2 = ycorner+dely
-                ycorner = general_utilities,hybrid_transform(yc1)
+                ycorner = general_utilities.hybrid_transform(yc1)
                 dely = general_utilities.hybrid_transform(yc2) - ycorner
             ellip = Ellipse(
                 (xcenter, ycenter), delx, dely,
@@ -653,14 +660,14 @@ def make_plot(plotgui):
                 xs2 = general_utilities.hybrid_transform(
                     plotgui.plot_vectors[n1]['xend'])
                 xlength = xs2 - xs1
-                delx = xs2 - hybrid_transform(
+                delx = xs2 - general_utilities.hybrid_transform(
                     plotgui.plot_vectors[n1]['xend']-delx)
             if hlogyflag == 1:
                 ys1 = general_utilities.hybrid_transform(y1)
                 ys2 = general_utilities.hybrid_transform(
                     plotgui.plot_vectors[n1]['yend'])
                 ylength = ys2 - ys1
-                delx = ys2 - hybrid_transform(
+                delx = ys2 - general_utilities.hybrid_transform(
                     plotgui.plot_vectors[n1]['yend']-dely)
             arrow = FancyArrow(
                 x1, y1, xlength, ylength, head_width=delx,
@@ -870,7 +877,7 @@ def make_plot(plotgui):
         plotgui.subplot[plotgui.current_plot-1].grid(b=False, axis='both',
                                                which='both')
     else:
-        if (gridoptionx == 0):
+        if gridoptionx == 0:
             plotgui.subplot[plotgui.current_plot-1].grid(b=False, axis='x',
                                                    which='both')
         else:

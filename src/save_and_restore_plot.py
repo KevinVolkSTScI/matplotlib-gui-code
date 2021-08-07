@@ -1,10 +1,24 @@
-import sys
-import math
+"""
+Routines to save the current plot state to an ascii file, and to read back
+such a file to make a plot.  All the routines need to be passed a
+matplotlib_user_interface variable ("plotgui").
+
+Routines:
+
+save_plot     save the current plot information to an ascii file
+
+load_plot     read an ascii file to make a plot
+
+parse_save_file    attempt to read an ascii file for plot values, either to
+                   test the file or to actually load in all the values
+
+
+"""
 import os
 from copy import deepcopy
-import numpy
 import tkinter as Tk
 import tkinter.filedialog
+import numpy
 import general_utilities
 import make_plot
 import plot_flag_utilities
@@ -430,7 +444,7 @@ def parse_save_file(plotgui, lines, flag):
     """
     Parse an ascii save file and optionally load the values.
 
-    This program reads the lines from a matplotlib_user_interface.py save 
+    This program reads the lines from a matplotlib_user_interface.py save
     file.  It determines whether the file is structured properly.  If the
     flag value is True it also tries to set the parameters for the plot.
 
@@ -438,7 +452,7 @@ def parse_save_file(plotgui, lines, flag):
     ----------
 
         plotgui : the matplotlib_user_interface object holding the plot
- 
+
         lines : A set of limes (assumed to be from the .readlines()
                 function) from a matplotlib_user_interface.py save file
 
@@ -450,7 +464,7 @@ def parse_save_file(plotgui, lines, flag):
     -------
 
         goodfile :  A boolean value for whether the lines are of the
-                    expected structure for a matplotlib_user_interface.py 
+                    expected structure for a matplotlib_user_interface.py
                     save file
 
     """
@@ -1222,4 +1236,3 @@ def parse_save_file(plotgui, lines, flag):
         plotgui.number_of_plots = 1*nplots
         plotgui.hide_subplot = deepcopy(hide_subplot)
     return goodfile
-

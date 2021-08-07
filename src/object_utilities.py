@@ -1,11 +1,64 @@
-import math
+"""
+This file contains code concerning the plot objects (lines, labels, ...).  All
+the routines need to be passed the matplotlib_user_interface object
+("plotgui") within which the objects will exist.
+
+Routines:
+
+initialize_plot_objects   define the starting object variables, add
+                          placeholder values
+
+clear_objects             clear any objects defined in the plot object
+
+remove_line               remove the last line defined in the plot
+
+remove_vector             remove the last vector defined in the plot
+
+remove_ellipse            remove the last ellipse defined in the plot
+
+remove_box                remove the last box defined in the plot
+
+remove_all_lines          remove all lines in the plot
+
+remove_all_vectors        remove all vectors in the plot
+
+remove_all_ellipses       remove all ellipses in the plot
+
+remove_all_boxes          remove all boxes in the plot
+
+add_line                  set the flag for defining a line on the plot
+
+add_vector                set the flag for defining a vector on the plot
+
+add_ellipse               set the flag for defining an ellipse on the plot
+
+add_box                   set the flag for defining a box on the plot
+
+set_label                 set the flag for defining a label on the plot
+
+add_box_values            create a box on the plot
+
+apply_line_values         read the line definition values from the window and
+                          apply them to the plot
+
+apply_vector_values       read the vector definition values from the window
+                          and apply them to the plot
+
+apply_box_values          read the box definition values from the window and
+                          apply them to the plot
+
+add_ellipse_values        create an ellipse on the plot
+
+apply_ellipse_values      read the ellipse definition values from the window
+                          and apply them to the plot
+
+add_line_values           create a line on the plot
+
+add_vector_values         create a vector on the plot
+"""
 import tkinter as Tk
 import tkinter.messagebox
 from tkinter.colorchooser import askcolor
-from tkinter.scrolledtext import ScrolledText
-import matplotlib
-import matplotlib.lines as mlines
-from matplotlib.patches import Rectangle, Ellipse, FancyArrow
 import general_utilities
 import make_plot
 
@@ -453,10 +506,10 @@ def add_box_values(plotgui):
                                  'dotted', 'None']
     BGCOL = '#F8F8FF'
     try:
-        plotgui.positions[-2][0]
-        plotgui.positions[-2][1]
-        plotgui.positions[-1][0]
-        plotgui.positions[-1][1]
+        var = plotgui.positions[-2][0]
+        var = plotgui.positions[-2][1]
+        var = plotgui.positions[-1][0]
+        var = plotgui.positions[-1][1]
     except TypeError:
         tkinter.messagebox.showinfo(
             "Error",
@@ -540,7 +593,7 @@ def add_box_values(plotgui):
     label1.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         frame2, text="Close Window",
-        command=lambda: plotgui.close_window(plotgui.box_window, 
+        command=lambda: plotgui.close_window(plotgui.box_window,
                                              'box_window'))
     close_button.pack(side=Tk.LEFT)
 
@@ -743,10 +796,10 @@ def add_ellipse_values(plotgui):
                                  'dotted', 'None']
     BGCOL = '#F8F8FF'
     try:
-        plotgui.positions[-2][0]
-        plotgui.positions[-2][1]
-        plotgui.positions[-1][0]
-        plotgui.positions[-1][1]
+        var = plotgui.positions[-2][0]
+        var = plotgui.positions[-2][1]
+        var = plotgui.positions[-1][0]
+        var = plotgui.positions[-1][1]
     except ValueError:
         tkinter.messagebox.showinfo(
             "Error", "The required start and"
@@ -827,7 +880,7 @@ def add_ellipse_values(plotgui):
     label1.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         frame2, text="Close Window",
-        command=lambda: plotgui.close_window(plotgui.ellipse_window, 
+        command=lambda: plotgui.close_window(plotgui.ellipse_window,
                                              'ellipse_window'))
     close_button.pack(side=Tk.LEFT)
 
@@ -914,10 +967,10 @@ def add_line_values(plotgui):
                                  'dotted', 'None']
     BGCOL = '#F8F8FF'
     try:
-        plotgui.positions[-2][0]
-        plotgui.positions[-2][1]
-        plotgui.positions[-1][0]
-        plotgui.positions[-1][1]
+        var = plotgui.positions[-2][0]
+        var = plotgui.positions[-2][1]
+        var = plotgui.positions[-1][0]
+        var = plotgui.positions[-1][1]
     except ValueError:
         tkinter.messagebox.showinfo(
             "Error", "The required start and "
@@ -1010,10 +1063,10 @@ def add_vector_values(plotgui):
                                  'dotted', 'None']
     BGCOL = '#F8F8FF'
     try:
-        plotgui.positions[-2][0]
-        plotgui.positions[-2][1]
-        plotgui.positions[-1][0]
-        plotgui.positions[-1][1]
+        var = plotgui.positions[-2][0]
+        var = plotgui.positions[-2][1]
+        var = plotgui.positions[-1][0]
+        var = plotgui.positions[-1][1]
     except ValueError:
         tkinter.messagebox.showinfo(
             "Error", "The required start "
@@ -1104,7 +1157,6 @@ def add_vector_values(plotgui):
     label1.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         frame2, text="Close",
-        command=lambda: plotgui.close_window(plotgui.vector_window, 
+        command=lambda: plotgui.close_window(plotgui.vector_window,
                                              'vector_window'))
     close_button.pack(side=Tk.LEFT)
-
