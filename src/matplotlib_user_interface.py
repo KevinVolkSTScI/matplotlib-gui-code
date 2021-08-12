@@ -777,7 +777,7 @@ class PlotGUI(Tk.Frame):
         try:
             s1 = 'Position: [%g, %g]' % (event.xdata, event.ydata)
             self.histogramLabelText.set(s1)
-        except ValueError:
+        except (ValueError, TypeError):
             pass
 
     def hess_position(self, event):
