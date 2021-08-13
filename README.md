@@ -53,7 +53,7 @@ To install the package run the normal command
 
 python setup.py install
 
-in the target directory /your /path/to/the/files.  This will add build and dist
+in the target directory /your/path/to/the/files.  This will add build and dist
 directories.  Do not issue this command in the src directory, it must be done
 in the upper level directory.
 
