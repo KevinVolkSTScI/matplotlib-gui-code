@@ -1,6 +1,41 @@
-import numpy
+"""
+Here are routines dealing with the various plot control flags/values.  All
+these routines need to be passed the matplotlib_user_interface object for the
+plots.
+
+Routines:
+
+toggle_equal_aspect    toggle the equal-aspect display flag
+
+set_opposite_y         create a separate y axis on the right side of the plot
+
+set_opposite_x         create a separate x axis on the top of the plot
+
+set_plot_number        bring up a window to set the active plot number if
+                       there is more than one plot
+
+set_plot_hide          bring up a window to hide a plot, if there is more
+                       than one plot active
+
+tile_plots             arange for a grid of plots
+
+set_current_plot       read the value in the set_plot_number window and
+                       apply it
+
+hide_selected_plot     read the value in the set_plot_hide window and
+                       apply it
+
+clear_plot             clear the plot area
+
+clear_current_plot     clear one plot in a grid
+
+clear_sets             clear inactive sets from the set variable
+
+
+"""
 import tkinter as Tk
 import tkinter.messagebox
+from copy import deepcopy
 import make_plot
 import window_creation
 import object_utilities
@@ -231,7 +266,7 @@ def set_plot_hide(plotgui):
     apply_button.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         buttonframe, text="Close",
-        command=lambda: plotgui.close_window(plotgui.hideplot_window, 
+        command=lambda: plotgui.close_window(plotgui.hideplot_window,
                                              'hideplot_window'))
     close_button.pack(side=Tk.LEFT)
 
@@ -276,14 +311,15 @@ def tile_plots(plotgui):
     plotgui.currentplot_set.insert(0, '1')
     buttonframe = Tk.Frame(plotgui.tile_window)
     buttonframe.pack(side=Tk.TOP)
-    apply_button = Tk.Button(buttonframe, text="Apply Values",
-                             command=window_creation.set_plot_layout)
+    apply_button = Tk.Button(
+      buttonframe, text="Apply Values",
+      command=lambda: window_creation.set_plot_layout(plotgui))
     apply_button.pack(side=Tk.LEFT)
     label1 = Tk.Label(buttonframe, text="     ")
     label1.pack(side=Tk.LEFT)
     close_button = Tk.Button(
         buttonframe, text="Close",
-        command=lambda: plotgui.close_window(plotgui.tile_window, 
+        command=lambda: plotgui.close_window(plotgui.tile_window,
                                              'tile_window'))
     close_button.pack(side=Tk.LEFT)
 
@@ -563,4 +599,3 @@ def clear_sets(plotgui):
     plotgui.ydata = ydata
     plotgui.set_properties = properties
     plotgui.original_range = original_range
-

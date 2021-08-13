@@ -1,3 +1,37 @@
+"""
+This files contains a number of data set utilities.  Each function needs to
+be passed a matplotlib_user_interface object where the data sets are found.
+This is by assumption "plotgui" in the code.
+
+Routines:
+
+create_data_set    create a window for making a data set via a user supplied
+                   function string
+
+parse_function_string    parse the function string for making a data set
+
+my_eval            evaluate the user defined function
+
+create_data_set_by_editor     bring up a window where the user can enter data
+                              (x, y) values for a new data set
+
+apply_data_input     parse the text in the data set entry window to make a
+                     data set
+
+write_data_sets      write the current data sets to an ascii output file
+
+my_format            routine to format a floating point data value, in a
+                     way that works better for constant width columns than
+                     the python %g format
+
+get_statistics       calculate some statistics on the data set values
+
+block_average        make a window for block averaging data sets
+
+do_block_average     read the block averaging parameters and apply them
+
+
+"""
 import math
 import numpy
 import tkinter as Tk
@@ -5,7 +39,6 @@ import tkinter.ttk
 import tkinter.filedialog
 import tkinter.simpledialog
 import tkinter.messagebox
-from tkinter.colorchooser import askcolor
 from tkinter.scrolledtext import ScrolledText
 import general_utilities
 import make_plot
@@ -237,7 +270,8 @@ def my_eval(inputstring, seq, xvalues=None, yvalues=None):
         return None
     # check the input string for command elements that could cause issues
     if ('import' in inputstring) or ('os.' in inputstring) or \
-       ('eval' in inputstring) or ('exec' in inputstring):
+       ('eval' in inputstring) or ('exec' in inputstring) or \
+       ('shutil' in inputstring):
         return None
     str1 = inputstring.replace('np.', 'numpy.')
     try:
@@ -261,7 +295,7 @@ def my_eval(inputstring, seq, xvalues=None, yvalues=None):
         values = eval(str1, global2, local1)
         return values
     except Exception:
-           return None
+        return None
 
 def create_data_set_by_editor(plotgui):
     """
@@ -355,7 +389,7 @@ def write_data_sets(plotgui):
 
     Parameters
     ----------
-            
+
         plotgui:  the matplotlib_user_interface object holding the plot
 
     Returns
@@ -500,7 +534,7 @@ def block_average(plotgui):
     """
     Make a new set by block averaging.
 
-    A window is made in which to determine the parameters of the averaging, 
+    A window is made in which to determine the parameters of the averaging,
     whereupon a new set is made with the block averaged values.
 
     Parameters
@@ -561,8 +595,7 @@ def do_block_average(plotgui):
         None
 
     """
-    if True:
-#    try:
+    try:
         nsample = int(plotgui.block_average_field.get())
         npoints = len(
             plotgui.xdata[plotgui.current_plot-1]['values'])
@@ -583,7 +616,7 @@ def do_block_average(plotgui):
         plotgui.add_set(xnew, ynew, labelstring=str1,
                         current_plot=plotgui.current_plot)
         make_plot.make_plot(plotgui)
-#    except:
-#        tkinter.messagebox.showinfo(
-#            'Error',
-#            'Unable to do the block averaging.  Please check your inputs.')
+    except:
+        tkinter.messagebox.showinfo(
+            'Error',
+            'Unable to do the block averaging.  Please check your inputs.')

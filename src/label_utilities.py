@@ -1,7 +1,26 @@
-import numpy
+"""
+Routines dealing with labels in the plot.
+
+All routines need to access the matplotlib_user_interface object, called
+"plotgui" to get the label parameters.
+
+Routines:
+
+edit_labels     Bring up a window to edit the labels in the plot
+
+read_labels     Read and apply the label values in the edit window
+
+clear_labels    Clear all the labels in the plot
+
+set_label_properties   Bring up a window within which to define label values
+                       when a label is first created in the plot
+
+set_label_values       Read the label properties fields and apply them
+
+
+"""
 import tkinter as Tk
 import tkinter.messagebox
-from tkinter.colorchooser import askcolor
 from tkinter.scrolledtext import ScrolledText
 import general_utilities
 import make_plot
@@ -21,7 +40,7 @@ def edit_labels(plotgui):
 
     Parameters
     ----------
-        plotgui:  A matplotlib_user_interface object, for the plot holding 
+        plotgui:  A matplotlib_user_interface object, for the plot holding
                   the labels
 
     Returns
@@ -311,4 +330,3 @@ def set_label_values(plotgui, ind1):
         make_plot.make_plot(plotgui)
     except Exception:
         pass
-

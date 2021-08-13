@@ -3,7 +3,6 @@ import numpy
 import tkinter as Tk
 from tkinter.scrolledtext import ScrolledText
 import make_plot
-import mpfit
 import mpfitexpr
 
 def activate_parameter(tkvars):
@@ -13,7 +12,7 @@ def activate_parameter(tkvars):
     Parameters
     ----------
 
-    tkvars:  a list of tkinter variables for Entry and control of parameters 
+    tkvars:  a list of tkinter variables for Entry and control of parameters
              in the non-linear fitting
 
     Returns
@@ -34,7 +33,7 @@ def process_state(tkvars):
     Parameters
     ----------
 
-    tkvars:  a list of tkinter variables for Entry and control of parameters 
+    tkvars:  a list of tkinter variables for Entry and control of parameters
              in the non-linear fitting
 
     Returns
@@ -149,9 +148,9 @@ def make_fitting_window(plotgui):
     """
     Create the window for non-linear data set fitting.
 
-    This routine creates a window for the data set fitting functions.  
-    One enters parameters and a function, and the code parses this into 
-    something that mpfit.py can work with for the fitting, similar to 
+    This routine creates a window for the data set fitting functions.
+    One enters parameters and a function, and the code parses this into
+    something that mpfit.py can work with for the fitting, similar to
     what is in xmgrace.
 
     If there are no sets to fit, the routine returns without doing
@@ -187,10 +186,7 @@ def make_fitting_window(plotgui):
                                                    pady=10)
     plotgui.tkcontrol = []
     for loop in range(10):
-        if loop < 2:
-            active = True
-        else:
-            active = False
+        active = bool(loop < 2)
         tkvals = fitting_parameter_group(holder, loop+1, active)
         plotgui.tkcontrol.append(tkvals)
     h1 = Tk.Frame(holder)

@@ -33,11 +33,17 @@ When the code is unpacked in the target directory you should see the following
 files in the directory:
 
 LICENSE
+
 README.md
+
 matplotlib_driver_code_documentation.docx
+
 matplotlib_driver_code_documentation.pdf
+
 setup.py
+
 src
+
 tests
 
 The tests directory is a placeholder and is currently empty.  The code itself

@@ -39,9 +39,9 @@ default matplotlib fonts.  If this is not the case, one will get a fall-back
 font instead (usually "DejaVe Sans").  One can install the Times New Roman
 font if this is not already on the system.  Due to preferences of the author
 the Times New Roman font is the default.  If one wishes to change this, search
-for 'times new roman' and replace the string by the default that is wanted, 
-say 'sans-serif' for example.  There are commented out lines to make 
-'sans-serif' the default font, which can be uncommented and used to replace 
+for 'times new roman' and replace the string by the default that is wanted,
+say 'sans-serif' for example.  There are commented out lines to make
+'sans-serif' the default font, which can be uncommented and used to replace
 the instances of 'times new roman' font as the default, should that be needed.
 
 ************************************************************
@@ -119,46 +119,57 @@ after making the call to show_plot with the sets, to keep the window in place.
 Otherwise the window will disappear after the show_plot call if nothing else
 is being done in the script.
 
+************************************************************
+
+Using the image display functionality
+
+  In a similar way one can use the image display functionality from the python
+command line.  There is a utility routine "showimage" for this purpose.
+
+>>> from astropy.io import fits
+>>>> imagefilename = 'test.fits'
+>>> image = fits.getdata(imagefilename)
+>>> import matplotlib_user_interface as mui
+>>> root, myplot = mui.showimage(image, imagefilename, dpi=300)
+
+The file name is optional.  The number of dots per inch is also optional.
+The default number of dots per inch is 100.
+
+If one wishes to make the calls explicitly they are (parameter self.indpi is
+the number of dots per inch):
+
+>>>> root = Tk.Tk()
+>>>> plotobject = mui.ImageGUI(root)
+>>>> plotobject.image = image
+>>>> plotobject.imagefilename = 'some_name.fits'
+>>>> plotobject.indpi = 300
+>>>> plotobject.make_image_window()
+
+As above, if done in a script one may need to add a call
+
+>>>> root.mainloop()
+
+to keep the window active.
 
 """
 import math
-from copy import deepcopy
 import sys
-import os
 import bisect
 import tkinter as Tk
 import tkinter.ttk
 import tkinter.filedialog
 import tkinter.simpledialog
 import tkinter.messagebox
-from tkinter.colorchooser import askcolor
-from tkinter.scrolledtext import ScrolledText
 import numpy
-from numpy.polynomial import polynomial, legendre, laguerre, chebyshev
-from scipy.interpolate import UnivariateSpline
 import matplotlib
 import matplotlib.lines as mlines
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
-from matplotlib.colors import LogNorm
-from matplotlib.collections import PatchCollection
-from matplotlib.patches import Rectangle, Ellipse, FancyArrow
-from matplotlib.ticker import MultipleLocator
 import astropy.io.fits as fits
 import general_utilities
 import object_utilities
 import label_utilities
 import make_plot
-import edit_objects
-import save_and_restore_plot
-#import fits_image_display
-import histogram_utilities
-import data_set_utilities
-import data_set_operations
-import plot_flag_utilities
+import fits_image_display
 import window_creation
-import plot_controls
-import non_linear_fitting
 
 # The following are "global" variables with line/marker information from
 # matplotlib.  These are used, but not changed, in the code in more than one
@@ -192,7 +203,7 @@ def startup():
     -------
         newroot :   The Tkinter window class variable for the plot window.
 
-        plotobject :  The matplotlib_user_interface plot GUI object variable.  
+        plotobject :  The matplotlib_user_interface plot GUI object variable.
                       This is the variable one uses for making plots.
 
     """
@@ -406,7 +417,7 @@ class PlotGUI(Tk.Frame):
         None
         """
         make_plot.make_plot(self)
-        
+
     def read_image(self):
         """
         Read in a FITS 2-D image for display.
@@ -516,8 +527,6 @@ class PlotGUI(Tk.Frame):
 
         No values are returned.
         """
-        xpos = event.xdata
-        ypos = event.ydata
         for loop in range(self.number_of_plots):
             if event.inaxes == self.subplot[loop]:
                 self.current_plot = loop + 1
@@ -768,7 +777,7 @@ class PlotGUI(Tk.Frame):
         try:
             s1 = 'Position: [%g, %g]' % (event.xdata, event.ydata)
             self.histogramLabelText.set(s1)
-        except ValueError:
+        except (ValueError, TypeError):
             pass
 
     def hess_position(self, event):
@@ -811,7 +820,7 @@ class PlotGUI(Tk.Frame):
 
            label :  A string identifying which window is being closed
 
-           clear_data_input :   A boolean flag for whether the datavalues 
+           clear_data_input :   A boolean flag for whether the datavalues
                                 variable needs to be cleared.
 
         Returns
@@ -1132,17 +1141,7 @@ class PlotGUI(Tk.Frame):
                                   "1", "2", "3", "4", "8", "s", "p", "P",
                                   "*", "h", "H", "+", "x", "X", "D", "d",
                                   "|", "_", "histogram"]
-        matplotlib_symbol_name_list = ['None', 'point', 'pixel', 'circle',
-                               'triangle down', 'triangle up',
-                               'triangle left', 'triangle right', 'tri_down',
-                               'tri_up', 'tri_left', 'tri_right', 'octagon',
-                               'square', 'pentagon', 'plus (filled)', 'star',
-                               'hexagon1', 'hexagon2', 'plus', 'x',
-                               'x (filled)', 'diamond', 'thin_diamond',
-                               'vline', 'hline', 'histogram']
         matplotlib_line_list = ['-', '--', '-.', ':', None]
-        matplotlib_line_name_list = ['solid', 'dashed', 'dashdot',
-                                     'dotted', 'None']
         if (index < 0) | (index >= self.nsets):
             return
         try:
@@ -1204,7 +1203,7 @@ class PlotGUI(Tk.Frame):
         """
         colour = self.grid_colour_variable.get()
         self.grid_colour[self.current_plot-1] = colour
-        
+
     def set_grid_linetype(self, event):
         """
         Set the grid line colour for the current plot.
@@ -1221,7 +1220,7 @@ class PlotGUI(Tk.Frame):
         """
         linetype = self.grid_linetype_variable.get()
         self.grid_linetype[self.current_plot-1] = linetype
-        
+
     def generate_legend(self, event):
         """
         Generate the legend values from the sets of the plot.

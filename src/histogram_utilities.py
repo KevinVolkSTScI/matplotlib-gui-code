@@ -1,21 +1,33 @@
-import numpy
-import math
-import bisect
-import astropy.io.fits as fits
+"""
+This file contains code for making histogram plots.
+
+Routines:
+
+make_histogram     Code to make a histogram plot in a new window
+
+write_histogram    Write the histogram values out to an ascii file
+
+make_hess_plot     Code to make a two-dimensional "histogram" or density of
+                   points plot for a plot (called a Hess plot when used
+                   for a colour-magnitude diagram)
+
+makeFits           Write out the two-dimensional histogram values to a
+                   FITS image
+
+All these routines need to get data from the matplotlib_user_interface
+object ("plotgui").
+
+"""
 import tkinter as Tk
 import tkinter.ttk
 import tkinter.filedialog
 import tkinter.simpledialog
 import tkinter.messagebox
-from tkinter.colorchooser import askcolor
-from tkinter.scrolledtext import ScrolledText
-import matplotlib
-import matplotlib.lines as mlines
+import numpy
+from astropy.io import fits
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from matplotlib.colors import LogNorm
-from matplotlib.collections import PatchCollection
-from matplotlib.patches import Rectangle, Ellipse, FancyArrow
 from matplotlib.ticker import MultipleLocator
 import general_utilities
 
@@ -481,5 +493,4 @@ def makeFits(plotgui):
     primary['CUNIT1'] = (' ', 'axis 1 unit')
     primary['CUNIT2'] = (' ', 'axis 2 unit')
     hdulist.writeto(filename, overwrite=True)
-
 
