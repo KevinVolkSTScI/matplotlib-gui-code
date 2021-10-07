@@ -1272,5 +1272,8 @@ if __name__ == "__main__":
         if '--fast' in arg:
             import matplotlib.style as mplstyle
             mplstyle.use('fast')
+    # Uncomment the following command to set the foreground/background colours
+    #root.tk_setPalette(background='#f8f8ff', foreground='black',
+    #    activeBackground='black', activeForeground='#f8f8ff')
     root, gui_window = startup()
     root.mainloop()
