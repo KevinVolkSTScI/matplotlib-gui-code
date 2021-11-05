@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 #
 """
-This code uses matplotlib and numpy to produce a window within which a FITS
-image can be displayed.  The reason for having this and not using the usual
-packages already in existence is that I will want specific functions on the
+This code uses matplotlib and numpy to produce a window within which a FITS 
+image can be displayed.  The reason for having this and not using the usual 
+packages already in existence is that I will want specific functions on the 
 image for data reduction.
 
 Usage:
@@ -18,24 +18,26 @@ In the first case the image name given is loaded (if possible) and displayed.
 
 In the second case the widget comes up and one can read in an image.
 
-Note that if the image is of dimension larger than 2 then the first "plane"
+Note that if the image is of dimension larger than 2 then the first "plane" 
 is used.  There is no mechanism here for using other planes.
 
 """
 import math
 import sys
+import numpy
+import astropy.io.fits as fits
 import tkinter as Tk
 import tkinter.ttk
 import tkinter.filedialog
 import tkinter.simpledialog
 import tkinter.messagebox
-import numpy
-from astropy.io import fits
+import matplotlib
+import matplotlib.lines as mlines
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+from matplotlib.colors import LogNorm
 from photutils import aperture
 import general_utilities
-import make_plot
 
 class ImageGUI(Tk.Frame):
     """
@@ -66,7 +68,7 @@ class ImageGUI(Tk.Frame):
         self.cross = 2
         self.xposition = None
         self.yposition = None
-        self.colourBarVariable = None
+        self.catalogue = None
         if parent is not None:
             # initialize the window and make the plot area.
             Tk.Frame.__init__(self, parent, args)
@@ -87,7 +89,7 @@ class ImageGUI(Tk.Frame):
            None
         """
         make_plot.make_plot(self)
-
+            
     def make_image_window(self):
         """
         Make the main image display window.
@@ -331,8 +333,10 @@ class ImageGUI(Tk.Frame):
         ymin = y1 - nypixel/2.
         xmin = int(xmin)
         ymin = int(ymin)
-        xmin = max(xmin, 0)
-        ymin = max(ymin, 0)
+        if xmin < 0:
+            xmin = 0
+        if ymin < 0:
+            ymin = 0
         xmax = xmin + nxpixel
         ymax = ymin + nypixel
         if ymax > sh1[0]:
@@ -972,25 +976,6 @@ class ImageGUI(Tk.Frame):
             pass
 
     def plotxy(self, xvalues, yvalues, **parameters):
-        """
-        THis code provides a simple (x,y) plotting interface.
-
-        Parameters
-        ----------
-        xvalues : a 1-d numpy float array by assumption, the x data values
-
-        yvalues : a 1-d numpy float array by assumption, the y data values
-            DESCRIPTION.
-        **parameters : various possible additional parameters for the plot,
-                       such as "title", "xlabel", "ylabel", "sym", and
-                       "colour"
-
-        Returns
-        -------
-
-        None
-
-        """
         BGCOL = '#F8F8FF'
         if self.image is None:
             return
@@ -1025,7 +1010,7 @@ class ImageGUI(Tk.Frame):
             button = Tk.Button(
                 h1, text="Save values",
                 command=lambda: general_utilities.save_data_set_values(
-                    xvalues, yvalues, None))
+                    valuesx, yvalues, outstring))
             button.pack(side=Tk.LEFT)
             button.config(bg=BGCOL)
             button = Tk.Button(
@@ -1046,31 +1031,11 @@ class ImageGUI(Tk.Frame):
             pass
 
     def plot_radial_profile(self, xposition, yposition, **parameters):
-        """
-        A routine to calculate and plot the radial profile from a specified
-        position in the image
-
-        Parameters
-        ----------
-        xposition :  a float value, the x pixel posiion for the radial
-                     profile calculation
-
-        yposition : a float value, the y pixel position for the radial
-                    profile calculation
-
-        **parameters : various possible additional parameters for the plot,
-                       such as "title", "xlabel", "ylabel", "sym", and
-                       "colour"
-
-        Returns
-        -------
-        None.
-
-        """
         BGCOL = '#F8F8FF'
         if self.image is None:
             return
-        try:
+        if True:
+#        try:
             xvalues, yvalues, yerror = self.radial_profile(
                 self.image, 1.0, 10., centre=[xposition, yposition])
             profilewindow = Tk.Toplevel()
@@ -1103,7 +1068,7 @@ class ImageGUI(Tk.Frame):
             button = Tk.Button(
                 h1, text="Save values",
                 command=lambda: general_utilities.save_data_set_values(
-                    xvalues, yvalues, None))
+                    valuesx, yvalues, outstring))
             button.pack(side=Tk.LEFT)
             button.config(bg=BGCOL)
             button = Tk.Button(
@@ -1120,48 +1085,44 @@ class ImageGUI(Tk.Frame):
                                command=profilewindow.destroy)
             button.pack()
             button.config(bg=BGCOL)
-        except Exception:
-            pass
+#        except Exception:
+#            pass
 
-    def radial_profile(self, array, rstep=0.5, rmax=0.0, centre=None, \
-                       error=None):
+    def radial_profile(self, array, rstep=0.5, rmax=0.0, centre=None, error=None):
         """
-        This routine calculates the radial profile of values for an image.
-        The image is passed as the first argument.  The centre pixel is used
-        for the centre point of the calculations unless a value is passed to
-        the routine.
+        This routine calculates the radial profile of values for an image.  The
+        image is passed as the first argument.  The centre pixel is used for the
+        centre point of the calculations unless a value is passed to the routine.
 
         Parameters
         ----------
         array :   A two-dimensional numpy image (assumed to be float values).
 
-        rstep :   Optional floating point step value in pixels for the
-                  encircled energy function.
+        rstep :   Optional floating point step value in pixels for the encircled
+                  energy function.
 
-        rmax :   Optional floating point value, the maximum radius in pixels
-                 for the encircled energy function. If no value is given, the
+        rmax :   Optional floating point value, the maximum radius in pixels for
+                 the encircled energy function. If no value is given, the
                  distance from the centre position to the nearest image edge
                  is used.
+ 
+        centre : Optional two-element list of the [x, y] values of the centre from
+                 which the radius is calculated.  It is assumed to be two float
+                 values, x and then y.  If not provided, the image centre is used.
 
-        centre : Optional two-element list of the [x, y] values of the centre
-                 from which the radius is calculated.  It is assumed to be two
-                 float values, x and then y.  If not provided, the image
-                 centre is used.
-
-        error :  An optional two-dimensional numpy image (assumed to be float
-                 values) of the uncertainties per pixel; if nothing is passed,
-                 the uncertainties are all set to zero.  The errors must all
-                 b2 positive and non-zero.
+        error :  An optional two-dimensional numpy image (assumed to be float 
+                 values) of the uncertainties per pixel; if nothing is passed, 
+                 the uncertainties are all set to zero.  The errors must all be 
+                 positive.
 
         Returns
         -------
 
-        radius :  A one-dimensional numpy float array of radius values in
-                  pixels.
+        radius :  A one-dimensional numpy float array of radius values in pixels.
 
         signal :  A one-dimensional numpy float array of the signal values
 
-        signal_error : A one-dimensional numpy float array of the uncertainties
+        signal_error : A one-dimensional numpy float array of the uncertainties 
                        in the signal values
 
         """
@@ -1173,7 +1134,7 @@ class ImageGUI(Tk.Frame):
             uncertainties = array*0.
         else:
             uncertainties = numpy.copy(error)
-            if uncertainties.shape != shape:
+            if uncertainites.shape != shape:
                 print('Error: the uncertainty array is not the same shape as the ')
                 print('  signal array, setting to zero.')
                 uncertainties = array*0.
@@ -1211,7 +1172,7 @@ class ImageGUI(Tk.Frame):
             else:
                 nout = loop
         return rout[0:nout], signal[0:nout], signal_error[0:nout]
-
+        
     def displayImage(self):
         """
         Display the current image in the display area.
@@ -1309,7 +1270,37 @@ class ImageGUI(Tk.Frame):
                         im1, cmap=self.colourLabels[cind],
                         orientation='horizontal')
                 self.colourBarVariable.ax.set_xlabel(cblabel, rotation=0)
+            if self.catalogue is not None:
+                try:
+                    starpos = numpy.transpose((self.catalogue['xcentroid'],
+                        self.catalogue['ycentroid']))
+                except:
+                    try:
+                        starpos = numpy.transpose((
+                            self.catalogue['x_centroid'],
+                            self.catalogue['y_centroid']))
+                    except:
+                        starpos = None
+                if not starpos is None:
+                    if self.zoom[0] > 1:
+                        starpos[:,0] = starpos[:,0]-self.zoom[1]
+                        starpos[:,1] = starpos[:,1]-self.zoom[2]
+                    rad1 = newimage.shape[0]/50.
+                    ap1 = aperture.CircularAperture(starpos, r=rad1)
+                    ap1.plot(axes=self.mplsubplot1, color='black', lw=1.0)
+                    for loop in range(len(self.catalogue['label'])):
+                        radx = rad1
+                        rady = rad1
+                        if starpos[loop, 0]+radx >= newimage.shape[1]:
+                            radx = -radx
+                        if starpos[loop, 1]+rady >= newimage.shape[0]:
+                            rady = -rady
+                        self.mplsubplot1.annotate(
+                            self.catalogue['label'][loop],
+                            [starpos[loop, 0]+radx, starpos[loop, 1]+rady],
+                            color='black', size=10)
             self.canvas1.draw()
+#            self.canvas1.get_tk_widget().focus_set()
 
     def invLogTransform(self, value, zmin, zmax):
         """
@@ -1340,9 +1331,11 @@ class ImageGUI(Tk.Frame):
         if value > 3.:
             newvalue = 3.
         v1 = math.pow(10., newvalue)
-        v1 = max(v1, 1.0)
-        v1 = min(v1, 1000.)
-        v2 = (v1 - 1.)/999.0
+        if v1 < 1.:
+            v1 = 1.
+        if v1 > 1000.:
+            v1 = 1000.
+        v2 = (v1 - 1.)/999.9
         vout = zmin + (zmax - zmin) * v2
         return vout
 
@@ -1453,3 +1446,4 @@ if __name__ == "__main__":
         imdisp.get_image()
     imdisp.make_image_window()
     root.mainloop()
+
