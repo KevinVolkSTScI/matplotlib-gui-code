@@ -34,13 +34,20 @@ put_yes_no:  make a Tkinter two choice radio button object
 
 add_yes_no_field:   utility routine to add a yes/no radio button and return the 
                     associated Tkinter int variable (1 for yes, 0 for no)
+
+save_fits_image:   save an image to a FITS file 
+
+show_text:    Show a text string in a Tkinter window scrolled text box
 """
 
 import math
 import numpy
 import matplotlib
+from astropy.io import fits
+from astropy.stats import sigma_clip
 import tkinter as Tk
 import tkinter.filedialog
+from tkinter.scrolledtext import ScrolledText
 
 def get_subimage(image, zoom):
     """
@@ -127,8 +134,8 @@ def save_png_figure(fig):
         None
 
     """
-    outfile = tkinter.filedialog.asksaveasfilename(filetypes=[('PNG',
-                                                               '.png')])
+    outfile = tkinter.filedialog.asksaveasfilename(
+        filetypes=[('PNG', '.png')])
     if isinstance(outfile, type('string')):
         s1 = outfile.split('.')
     if 'png' not in s1[-1]:
@@ -151,8 +158,8 @@ def save_ps_figure(fig):
         None
 
     """
-    outfile = tkinter.filedialog.asksaveasfilename(filetypes=[('PS',
-                                                               '.ps')])
+    outfile = tkinter.filedialog.asksaveasfilename(
+        filetypes=[('PS', '.ps')])
     if isinstance(outfile, type('string')):
         s1 = outfile.split('.')
         if 'ps' not in s1[-1]:
@@ -742,6 +749,26 @@ def put_yes_no(root, var, labels, flag):
         nofield.select()
 
 def add_yes_no_field(frame, text, flag):
+    """
+    Add a yes/no radio button to a frame.
+
+    Parameters
+    ----------
+
+    frame:  a tkinter Frame variable that holds the yes/no radio button
+
+    text:   a string variable, the label for the radio button pair (put at 
+            left before the yes/no radio buttons)
+
+    flag:   a tkinter IntVar variable, the variable set by the radio button 
+            pair
+
+    Returns
+    -------
+
+    None
+
+    """
     field1 = Tk.Frame(frame)
     field1.pack(side=Tk.TOP)
     label = Tk.Label(field1, text=text)
@@ -751,3 +778,109 @@ def add_yes_no_field(frame, text, flag):
     put_yes_no(b1, newvar, ['Yes', 'No'], flag)
     b1.pack()
     return newvar
+
+def save_fits_image(image, overwrite=True):
+    """
+    Write an image to a FITS file.
+
+    Parameters
+    ----------
+
+    image:  a numpy array of values to save to a fits file 
+
+    overwrite:  an optional Boolean variable, whether to overwrite the file if 
+                it exists
+
+    Returns
+    -------
+
+    None
+
+    The code prompts for the output file name.
+
+    """
+    filename = tkinter.filedialog.asksaveasfilename(
+        filetypes=[('FITS', '*.fits')])
+    if filename is not None:
+        hdu = fits.PrimaryHDU(image)
+        hdulist = fits.HDUList(hdu)
+        hdulist.writeto(filename, overwrite=overwrite)
+
+def show_text(textstring, titlestring=" "):
+    """
+    Bring up a window within which the input text is displayed.
+
+    Parameters
+    ----------
+
+    textstring:  a string variable that is displayed in the window
+
+    titlestring:  an optional string variable that is used as the title 
+                  of the window
+
+    Returns
+    -------
+
+    None
+
+    """
+    message_window = Tk.Toplevel()
+    message_window.title(titlestring)
+    frame1 = Tk.Frame(message_window)
+    frame1.pack(side=Tk.TOP)
+    message_text = ScrolledText(
+        frame1, height=40, width=80, bd=1, relief=Tk.RIDGE, wrap=Tk.NONE)
+    message_text.config(font=('courier', 16, 'bold'))
+    message_text.pack()
+    message_text.insert('0.0', textstring)
+    frame2 = Tk.Frame(message_window)
+    frame2.pack()
+    button1 = Tk.Button(
+        frame2, text='Close', command=message_window.destroy)
+    button1.pack()
+
+def image_stats(image):
+    """
+    Calculate some image statistics and return the values.
+
+    Parameters
+    ----------
+
+    image:   by assumption a numpy array of float values (needs not be of any 
+             specific shape, although it is called an "image")
+
+    Returns
+    -------
+
+    stats:   a numpy array of float values giving the image statistics
+
+             mean
+             sigma
+             median
+             minimum
+             maximum
+             clipped mean
+             clipped sigma
+             clipped median
+             clipped minimum
+             clipped maximum
+
+    If there is an issue, the stats value is None
+    """
+    try:
+        mean = numpy.mean(image)
+        sigma = numpy.std(image)
+        median = numpy.median(image)
+        min1 = numpy.min(image)
+        max1 = numpy.max(image)
+        cimage = sigma_clip(image, masked=False)
+        cmean = numpy.mean(cimage)
+        csigma = numpy.std(cimage)
+        cmedian = numpy.median(cimage)
+        min2 = numpy.min(cimage)
+        max2 = numpy.max(cimage)
+        values = numpy.asarray([mean, sigma, median, min1, max1,
+                                cmean, csigma, cmedian, min2, max2])
+        return values
+    except:
+        return None

@@ -26,11 +26,13 @@ import math
 import sys
 import numpy
 import astropy.io.fits as fits
+from astropy.modeling import models, fitting
 import tkinter as Tk
 import tkinter.ttk
 import tkinter.filedialog
 import tkinter.simpledialog
 import tkinter.messagebox
+from tkinter.scrolledtext import ScrolledText
 import matplotlib
 import matplotlib.lines as mlines
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -69,6 +71,7 @@ class ImageGUI(Tk.Frame):
         self.xposition = None
         self.yposition = None
         self.catalogue = None
+        self.fit_image = None
         if parent is not None:
             # initialize the window and make the plot area.
             Tk.Frame.__init__(self, parent, args)
@@ -877,7 +880,7 @@ class ImageGUI(Tk.Frame):
                         title=tstring)
             return
         if event.key == 'k':
-            ystart = ypixel-10
+            ystart = ypixel-self.segment
             if ystart < 0:
                 ystart = 0
             yend = ystart + self.segment + self.segment + 2
@@ -905,6 +908,14 @@ class ImageGUI(Tk.Frame):
             self.plot_radial_profile(event.xdata, event.ydata,
                                      xlabel='Radius (pixels)',
                                      ylabel='Signal', title=tstring)
+            return
+        if event.key == 's':
+            self.plot_surface_fit()
+            return
+        if event.key == 'h':
+            self.show_key_help()
+            return
+        # all other keys move the zoom window to be centred on the position
         xmin, ymin = self.zoom_corner(sh1, self.zoom[0], self.xposition,
                                       self.yposition)
         self.zoom[1] = xmin
@@ -1034,8 +1045,7 @@ class ImageGUI(Tk.Frame):
         BGCOL = '#F8F8FF'
         if self.image is None:
             return
-        if True:
-#        try:
+        try:
             xvalues, yvalues, yerror = self.radial_profile(
                 self.image, 1.0, 10., centre=[xposition, yposition])
             profilewindow = Tk.Toplevel()
@@ -1085,8 +1095,8 @@ class ImageGUI(Tk.Frame):
                                command=profilewindow.destroy)
             button.pack()
             button.config(bg=BGCOL)
-#        except Exception:
-#            pass
+        except Exception:
+            pass
 
     def radial_profile(self, array, rstep=0.5, rmax=0.0, centre=None, error=None):
         """
@@ -1435,6 +1445,183 @@ class ImageGUI(Tk.Frame):
         newimage[image < 0.] = -1. * newimage[image < 0.]
         self.transvalues = [1.]
         return newimage
+
+    def plot_surface_fit(self):
+        if self.image is None:
+            return
+        ypix, xpix = numpy.mgrid[:self.image.shape[0], :self.image.shape[1]]
+        nfit = tkinter.simpledialog.askinteger(
+            'Input',
+            'Set the fitting order in x and y')
+        if nfit is None:
+            nfit = 4
+        if nfit < 1:
+            nfit = 4
+        polynomial_init = models.Polynomial2D(degree=nfit)
+        fit_polynomial = fitting.LevMarLSQFitter()
+        fit_image = fit_polynomial(polynomial_init, xpix, ypix, self.image)
+        self.fit_image = fit_image(xpix, ypix)
+        BGCOL = '#F8F8FF'
+        if True:
+#        try:
+            surfacewindow = Tk.Toplevel()
+            surfacewindow.config(bg=BGCOL)
+            self.surfaceLabelText = Tk.StringVar()
+            self.surfaceLabel = Tk.Label(
+                surfacewindow, textvariable=self.surfaceLabelText,
+                anchor=Tk.N, width=70)
+            self.surfaceLabel.pack()
+            self.surfaceLabelText.set("Value:")
+            self.p6 = Figure(figsize=(6, 6), dpi=100)
+            sp1 = self.p6.add_subplot(1, 1, 1)
+            cind = self.colourScheme.current()
+            im1 = sp1.imshow(
+                self.fit_image, cmap=self.colourLabels[cind],
+                origin='lower')
+            bar = self.p6.colorbar(
+                im1, cmap=self.colourLabels[cind],
+                orientation='vertical')
+            c1 = FigureCanvasTkAgg(self.p6, master=surfacewindow)
+            c1.mpl_connect("motion_notify_event", self.surfacePosition)
+            xmin, xmax = sp1.get_xbound()
+            xpos = xmin + (xmax - xmin)*0.02
+            ymin, ymax = sp1.get_ybound()
+            ypos = ymax + (ymax - ymin)*0.02
+            outstring = '# Order %d surface fit ' % (nfit)
+            if self.imagefilename is not None:
+                outstring = outstring+'from file\n'+self.imagefilename
+            sp1.text(xpos, ypos, outstring)
+            c1.draw()
+            c1.get_tk_widget().pack(side=Tk.TOP, fill=Tk.BOTH, expand=Tk.YES)
+            h1 = Tk.Frame(surfacewindow)
+            h1.pack(side=Tk.TOP)
+            h1.config(bg=BGCOL)
+            button = Tk.Button(
+                h1, text="Save image",
+                command=lambda: general_utilities.save_fits_image(self.image))
+            button.pack(side=Tk.LEFT)
+            button.config(bg=BGCOL)
+            button = Tk.Button(
+                h1, text="Save as PS",
+                command=lambda: general_utilities.save_ps_figure(self.p6))
+            button.pack(side=Tk.LEFT)
+            button.config(bg=BGCOL)
+            button = Tk.Button(
+                h1, text="Save as PNG",
+                command=lambda: general_utilities.save_png_figure(self.p6))
+            button.pack(side=Tk.LEFT)
+            button.config(bg=BGCOL)
+            button = Tk.Button(h1, text="Close",
+                               command=surfacewindow.destroy)
+            button.pack()
+            button.config(bg=BGCOL)
+            residuals = self.image - self.fit_image
+            stats1 = general_utilities.image_stats(residuals)
+            stats2 = general_utilities.image_stats(self.image)
+            str1 = 'Image statistics:\n'
+            str1 = str1+'   mean:   '+str(stats2[0])+'\n'
+            str1 = str1+'   sigma:  '+str(stats2[1])+'\n'
+            str1 = str1+'   median: '+str(stats2[2])+'\n'
+            str1 = str1+'   min:    '+str(stats2[3])+'\n'
+            str1 = str1+'   max:    '+str(stats2[4])+'\n'
+            str1 = str1+'   clipped mean:   '+str(stats2[5])+'\n'
+            str1 = str1+'   clipped sigma:  '+str(stats2[6])+'\n'
+            str1 = str1+'   clipped median: '+str(stats2[7])+'\n'
+            str1 = str1+'   clipped min:    '+str(stats2[8])+'\n'
+            str1 = str1+'   clipped max:    '+str(stats2[9])+'\n'
+            str1 = str1+'\nResidual image statistics:\n'
+            str1 = str1+'   mean:   '+str(stats1[0])+'\n'
+            str1 = str1+'   sigma:  '+str(stats1[1])+'\n'
+            str1 = str1+'   median: '+str(stats1[2])+'\n'
+            str1 = str1+'   min:    '+str(stats1[3])+'\n'
+            str1 = str1+'   max:    '+str(stats1[4])+'\n'
+            str1 = str1+'   clipped mean:   '+str(stats1[5])+'\n'
+            str1 = str1+'   clipped sigma:  '+str(stats1[6])+'\n'
+            str1 = str1+'   clipped median: '+str(stats1[7])+'\n'
+            str1 = str1+'   clipped min:    '+str(stats1[8])+'\n'
+            str1 = str1+'   clipped max:    '+str(stats1[9])+'\n'
+            general_utilities.show_text(str1)
+#        except Exception:
+#            pass
+        return
+
+    def show_key_help(self):
+        """
+        Show the key commands in a scrolled text window.
+
+        Parameters
+        ----------
+
+        None
+
+        Returns
+        -------
+
+        None
+
+        """
+        str1 = """
+The following key commands are available when the cursor is in the plot area:
+
+(c)  plot the column at the current position (that is, all y at the current x 
+     pixel position) in a new window
+
+(l)  plot the line at the current position (that is, all x at the current y 
+     pixel position) in a new window
+
+(j)  take a slice in x of +/- 10 pixels from the current position over a 
+     y range of +/-2 pixels, plot the mean profile and attempt to fit this 
+     with a Gaussian function plus a baseline; if the fitting works, also 
+     plot the fitting function
+
+(k)  take a slice in y of +/- 10 pixels from the current position over a 
+     x range of +/-2 pixels, plot the mean profile and attempt to fit this 
+     with a Gaussian function plus a baseline; if the fitting works, also 
+     plot the fitting function
+
+(r)  calculate the radial profile from the current cursor position and plot 
+     the resulting function in a new window
+
+(s)  attempt to make a surface fit of the currently displayed (sub-)image, 
+     and if successful show the fit image in a new window; some statistics of 
+     the images are also calculated and shown in a scrolled text window
+
+(h)  show the key command help text
+
+Any other key command is used to set the centre position for a zoomed image, 
+if any zoom factor is defined.
+
+            """
+        general_utilities.show_text(str1, "Key Commands")
+
+    def surfacePosition(self, event):
+        """
+        Post the image position to the information line on the image display.
+
+        Routine to post the image position and the image value (if possible)
+        to the text area above the image display in the surface image window.
+
+        Parameters
+        ----------
+            event :   a motion-notify event from the image display window
+
+        Returns
+        -------
+            No values are returned by this routine.
+
+        """
+        try:
+            event.canvas.get_tk_widget().focus_set()
+            x1 = int(self.zoom[1]+event.xdata+0.5)
+            y1 = int(self.zoom[2]+event.ydata+0.5)
+            try:
+                value = '%.6g' % (self.fit_image[y1, x1])
+            except ValueError:
+                value = ' '
+            s1 = "Position: x = %.2f y = %.2f Value: %s" % (x1, y1, value)
+            self.surfaceLabelText.set(s1)
+        except Exception:
+            pass
 
 if __name__ == "__main__":
     # create the window
