@@ -781,8 +781,8 @@ class PlotGUI(Tk.Frame):
                                   self.plot_range[self.current_plot-1][2])
             if (xmin != xmax) and (ymin != ymax) and \
                (xratio > 0.01) and (yratio > 0.01):
-                print(self.plot_range[self.current_plot-1])
-                print(xmin, xmax, ymin, ymax)
+#                print(self.plot_range[self.current_plot-1])
+#                print(xmin, xmax, ymin, ymax)
                 self.original_range[self.current_plot-1] = False
                 self.plot_range[self.current_plot-1] = [xmin, xmax, ymin, ymax]
         make_plot.make_plot(self)
