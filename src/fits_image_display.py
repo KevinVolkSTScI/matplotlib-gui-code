@@ -1628,9 +1628,10 @@ if __name__ == "__main__":
     root = Tk.Tk()
     root.title('Image Display Widget')
     imdisp = ImageGUI(root)
-    if '.fits' in sys.argv[-1]:
-        imdisp.imagename = sys.argv[-1]
-        imdisp.get_image()
     imdisp.make_image_window()
+    if '.fits' in sys.argv[-1]:
+        imdisp.imagefilename = sys.argv[-1]
+        imdisp.image = imdisp.get_image()
+        imdisp.displayImage()
     root.mainloop()
 
