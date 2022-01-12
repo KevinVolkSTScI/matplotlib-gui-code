@@ -235,8 +235,6 @@ def run_fitting(plotgui):
     nset = int(plotgui.tkcontrol[-2].get())
     if (nset < 0) or (nset > plotgui.nsets):
         nset = 1
-    if (tolerance > 0.1) or (tolerance <= 0.):
-        tolerance = 0.01
     params = []
     start = []
     lowbound = []
@@ -311,7 +309,7 @@ def run_fitting(plotgui):
     else:
         inds = numpy.where(yerrors <= 0.)
         altinds = numpy.where(yerrors > 0.)
-        if len(inds[0]) == 0:
+        if len(altinds[0]) == 0:
             yerrors = yerrors*0.+0.01
         else:
             meanerror = numpy.mean(yerrors[altinds])
