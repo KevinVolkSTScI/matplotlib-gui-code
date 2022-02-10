@@ -11,7 +11,7 @@ with open("src/README.md", "r") as fh:
 
 setuptools.setup(
     name="matplotlib_user_interface", 
-    version="2021.08.07",
+    version="2022.02.10",
     author="Kevin Volk",
     author_email="kvolk@stsci.edu",
     description="A Matplotlib GUI program reminiscent of xmgrace.",
