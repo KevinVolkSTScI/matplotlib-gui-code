@@ -62,6 +62,7 @@ class ImageGUI(Tk.Frame):
     def __init__(self, parent=None, **args):
         self.image = None
         self.imagefilename = None
+        self.namestring = None
         self.zscale_flag = False
         self.root = None
         self.indpi = 100
@@ -415,6 +416,10 @@ class ImageGUI(Tk.Frame):
                 filetypes=[('FITS', '*.fits')])
             if filename is not None:
                 self.imagefilename = filename
+                values = filename.split('/')
+                self.namestring = values[-1]
+                values = filename.split('/')
+                self.namestring = values[-1]
                 self.image = self.get_image()
                 if self.image is None:
                     self.imagefilename = None
@@ -425,8 +430,10 @@ class ImageGUI(Tk.Frame):
                 print('centre position: ', self.xposition, self.yposition)
                 self.displayImage()
                 self.canvas1.draw()
+                values = filename.split('/')
+                self.namestring = values[-1]
         except Exception:
-            pass
+            self.namestring = ' '
 
     def get_limits(self, values, nsamples=1000, contrast=0.25, max_reject=0.5,
                    min_npixels=5, krej=2.5, max_iterations=5):
@@ -556,7 +563,7 @@ class ImageGUI(Tk.Frame):
         """
         try:
             image = fits.getdata(self.imagefilename)
-        except IndexError:
+        except (ValueError, IndexError):
             image = fits.getdata(self.imagefilename, ext=1)
         sh1 = image.shape
         if len(sh1) < 2:
@@ -905,7 +912,7 @@ class ImageGUI(Tk.Frame):
         if event.key == 'r':
             tstring = 'Radial profile at (%.3f %.3f)' % (
                 event.xdata+self.zoom[1], event.ydata+self.zoom[2])
-            self.plot_radial_profile(event.xdata+self.zoom[1],
+            self.plot_radial_profile(event.xdata+self.zoom[1], 
                                      event.ydata+self.zoom[2],
                                      xlabel='Radius (pixels)',
                                      ylabel='Signal', title=tstring)
@@ -980,7 +987,11 @@ class ImageGUI(Tk.Frame):
                 value = '%.6g' % (self.image[y1, x1])
             except ValueError:
                 value = ' '
-            s1 = "Position: x = %.2f y = %.2f Value: %s" % (x1, y1, value)
+            try:
+                s1 = self.namestring+"\n"
+            except:
+                s1 = ''
+            s1 = s1+"Position: x = %.2f y = %.2f Value: %s" % (x1, y1, value)
             self.imagePosLabelText.set(s1)
             self.imagexpos = event.xdata
             self.imageypos = event.ydata
@@ -1048,7 +1059,7 @@ class ImageGUI(Tk.Frame):
             return
         try:
             xvalues, yvalues, yerror = self.radial_profile(
-                self.image, 0.2, 20., centre=[xposition, yposition])
+                self.image, 1.0, 10., centre=[xposition, yposition])
             profilewindow = Tk.Toplevel()
             profilewindow.config(bg=BGCOL)
             self.profileLabelText = Tk.StringVar()
@@ -1174,13 +1185,12 @@ class ImageGUI(Tk.Frame):
                     aper = aperture.CircularAnnulus(centre, rinner, router)
                 else:
                     aper = aperture.CircularAperture(centre, router)
-                parea = aper.area
                 values = aperture.aperture_photometry(array, aper,
                                                       method='exact')
-                signal[loop] = values['aperture_sum']/parea
+                signal[loop] = values['aperture_sum']
                 evalues = aperture.aperture_photometry(uncertainties, aper,
                                                        method='exact')
-                signal_error[loop] = evalues['aperture_sum']/parea
+                signal_error[loop] = evalues['aperture_sum']
             else:
                 nout = loop
         return rout[0:nout], signal[0:nout], signal_error[0:nout]
