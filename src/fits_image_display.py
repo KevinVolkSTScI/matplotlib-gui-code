@@ -1033,7 +1033,7 @@ class ImageGUI(Tk.Frame):
             button = Tk.Button(
                 h1, text="Save values",
                 command=lambda: general_utilities.save_data_set_values(
-                    valuesx, yvalues, outstring))
+                    xvalues, yvalues, outstring))
             button.pack(side=Tk.LEFT)
             button.config(bg=BGCOL)
             button = Tk.Button(
@@ -1090,7 +1090,7 @@ class ImageGUI(Tk.Frame):
             button = Tk.Button(
                 h1, text="Save values",
                 command=lambda: general_utilities.save_data_set_values(
-                    valuesx, yvalues, outstring))
+                    xvalues, yvalues, outstring))
             button.pack(side=Tk.LEFT)
             button.config(bg=BGCOL)
             button = Tk.Button(
