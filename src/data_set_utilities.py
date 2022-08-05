@@ -410,14 +410,14 @@ def write_data_sets(plotgui):
         for n in range(len(plotgui.xdata[loop]['values'])):
             if n == 0:
                 if plotgui.xdata[loop]['errors']:
-                    for n in range(len(plotgui.xdata[loop]['lowerror'])):
-                        if plotgui.xdata[loop]['lowerror'][n] != \
-                           plotgui.xdata[loop]['higherror'][n]:
+                    for npoint in range(len(plotgui.xdata[loop]['lowerror'])):
+                        if plotgui.xdata[loop]['lowerror'][npoint] != \
+                           plotgui.xdata[loop]['higherror'][npoint]:
                             xboth = True
                 if plotgui.ydata[loop]['errors']:
-                    for n in range(len(plotgui.ydata[loop]['lowerror'])):
-                        if plotgui.ydata[loop]['lowerror'][n] != \
-                           plotgui.ydata[loop]['higherror'][n]:
+                    for npoint in range(len(plotgui.ydata[loop]['lowerror'])):
+                        if plotgui.ydata[loop]['lowerror'][npoint] != \
+                           plotgui.ydata[loop]['higherror'][npoint]:
                             yboth = True
                 headerstr = '# Set %d: %s' % (
                     loop+1, plotgui.set_properties[loop]['label'])
