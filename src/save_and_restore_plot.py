@@ -395,50 +395,55 @@ def load_plot(plotgui):
         "Verify",
         "Do you want to abandon the current plot for the saved one?")
     if response:
-        plot_flag_utilities.clear_plot(plotgui, False)
-        flag = parse_save_file(plotgui, lines, True)
-        save_plot_range = deepcopy(plotgui.plot_range)
-        save_xpars = deepcopy(plotgui.xparameters)
-        share_axis = deepcopy(plotgui.share_axis)
-        save_ypars = deepcopy(plotgui.yparameters)
-        nx1 = 1*plotgui.nxplots
-        ny1 = 1*plotgui.nyplots
-        nplots = 1*plotgui.number_of_plots
-        plotgui.nxplots = 0
-        plotgui.nyplots = 0
-        n1 = plotgui.current_plot
-        plotgui.subplot = []
-        plotgui.hide_subplot = [False, ]
-        plotgui.make_plot_layout(nx1, ny1, 1)
-        plotgui.share_axis = deepcopy(share_axis)
-        if plotgui.number_of_plots < nplots:
-            for loop in range(len(plotgui.share_axis)):
-                if plotgui.share_axis[loop] != 0:
-                    n2 = abs(plotgui.share_axis[loop])
-                    plotgui.current_plot = n2
-                    if plotgui.share_axis[loop] < 0:
-                        plotgui.subplot.append(plotgui.figure.add_subplot(
-                            plotgui.nxplots, plotgui.nyplots, n2,
-                            sharey=plotgui.subplot[n2-1],
-                            frameon=False))
-                        plotgui.bounding_box.append(plotgui.bounding_box[n2-1])
-                        plotgui.current_axis = len(plotgui.subplot)
-                    else:
-                        plotgui.subplot.append(plotgui.figure.add_subplot(
-                            plotgui.nxplots, plotgui.nyplots, n2,
-                            sharex=plotgui.subplot[n2-1],
-                            frameon=False))
-                        plotgui.bounding_box.append(plotgui.bounding_box[n2-1])
-                        plotgui.current_axis = len(plotgui.subplot)
-            plotgui.number_of_plots = nplots
-        plotgui.xparameters = deepcopy(save_xpars)
-        plotgui.yparameters = deepcopy(save_ypars)
-        for loop in range(len(plotgui.subplot)):
-            plotgui.current_plot = loop+1
-            make_plot.make_plot(plotgui)
-        plotgui.current_plot = n1
-        plotgui.plot_range = deepcopy(save_plot_range)
-        make_plot.make_plot(plotgui)
+        apply_save_file(plotgui, lines)
+
+
+def apply_save_file(plotgui, lines):
+    plot_flag_utilities.clear_plot(plotgui, False)
+    flag = parse_save_file(plotgui, lines, True)
+    save_plot_range = deepcopy(plotgui.plot_range)
+    save_xpars = deepcopy(plotgui.xparameters)
+    share_axis = deepcopy(plotgui.share_axis)
+    save_ypars = deepcopy(plotgui.yparameters)
+    nx1 = 1*plotgui.nxplots
+    ny1 = 1*plotgui.nyplots
+    nplots = 1*plotgui.number_of_plots
+    plotgui.nxplots = 0
+    plotgui.nyplots = 0
+    n1 = plotgui.current_plot
+    plotgui.subplot = []
+    plotgui.hide_subplot = [False, ]
+    plotgui.make_plot_layout(nx1, ny1, 1)
+    plotgui.share_axis = deepcopy(share_axis)
+    if plotgui.number_of_plots < nplots:
+        for loop in range(len(plotgui.share_axis)):
+            if plotgui.share_axis[loop] != 0:
+                n2 = abs(plotgui.share_axis[loop])
+                plotgui.current_plot = n2
+                if plotgui.share_axis[loop] < 0:
+                    plotgui.subplot.append(plotgui.figure.add_subplot(
+                        plotgui.nxplots, plotgui.nyplots, n2,
+                        sharey=plotgui.subplot[n2-1],
+                        frameon=False))
+                    plotgui.bounding_box.append(plotgui.bounding_box[n2-1])
+                    plotgui.current_axis = len(plotgui.subplot)
+                else:
+                    plotgui.subplot.append(plotgui.figure.add_subplot(
+                        plotgui.nxplots, plotgui.nyplots, n2,
+                        sharex=plotgui.subplot[n2-1],
+                        frameon=False))
+                    plotgui.bounding_box.append(plotgui.bounding_box[n2-1])
+                    plotgui.current_axis = len(plotgui.subplot)
+        plotgui.number_of_plots = nplots
+    plotgui.xparameters = deepcopy(save_xpars)
+    plotgui.yparameters = deepcopy(save_ypars)
+    plotgui.plot_range = deepcopy(save_plot_range)
+    plotgui.make_plot_layout(nx1, ny1, n1)
+    for loop in range(nx1*ny1):
+        make_plot.make_plot(plotgui, loop+1)
+    plotgui.current_plot = n1
+    make_plot.make_plot(plotgui)
+        
 
 def parse_save_file(plotgui, lines, flag):
     """
