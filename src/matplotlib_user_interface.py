@@ -1407,8 +1407,18 @@ if __name__ == "__main__":
         if '--fast' in arg:
             import matplotlib.style as mplstyle
             mplstyle.use('fast')
+        if (savefilename is None) and (not '--' in arg) and \
+           (not 'matplotlib_user_interface.py' in arg):
+            savefilename = arg
     root, gui_window = startup()
      # Uncomment the following command to set the foreground/background colours
      #root.tk_setPalette(background='#f8f8ff', foreground='black',
      #    activeBackground='black', activeForeground='#f8f8ff')
+    if not savefilename is None:
+        savefile = open(savefilename, 'r')
+        lines = savefile.readlines()
+        savefile.close()
+        flag = save_and_restore_plot.parse_save_file(gui_window, lines, False)
+        if flag:
+            save_and_restore_plot.apply_save_file(gui_window, lines)
     root.mainloop()
