@@ -599,7 +599,10 @@ class PlotGUI(Tk.Frame):
 
     def match_point(self, xposition, yposition):
         """
-        Match a data point closest to the current position.
+        Match a data point closest to the current position.  The distance is 
+        measured in terms of the plot range in x and y rather than in terms of 
+        the absolute distance since the scaling can be very different in x and y.
+
 
         Given an input plot position this routine finds the closest plot
         point and returns the point values.
@@ -626,12 +629,13 @@ class PlotGUI(Tk.Frame):
                       input position
 
         The return values may all be None if the position is outside the
-        plot area
+        plot area.
         """
         if (xposition is None) or (yposition is None):
             return None, None, None, None, None
         if self.nsets == 0:
             return None, None, None, None, None
+        xmin, xmax, ymin, ymax = self.plot_range[self.current_plot-1]
         try:
             dmin = -1.
             for loop in range(self.nsets):
@@ -639,10 +643,9 @@ class PlotGUI(Tk.Frame):
                 ydata = numpy.copy(self.ydata[loop]['values'])
                 if (xdata is None) or (ydata is None):
                     break
-                distances = numpy.sqrt(
-                    (xdata - xposition)*(xdata - xposition)
-                    + (ydata - yposition)*(ydata - yposition)
-                )
+                xdist = (xdata-xposition)/(xmax-xmin)
+                ydist = (ydata-yposition)/(ymax-ymin)
+                distances = numpy.sqrt(xdist*xdist+ydist*ydist)
                 dargmin = numpy.argmin(distances)
                 dminset = numpy.copy(distances[dargmin])
                 try:
